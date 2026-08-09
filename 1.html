@@ -101,10 +101,10 @@
       min-height: 100%;
     }
 
-    /* Slide 1: Video - убрали лишний отступ сверху */
+    /* Slide 1: Video */
     .slide-video {
       text-align: center;
-      padding-top: 0; /* убрали отступ сверху */
+      padding-top: 0;
       padding-bottom: 10px;
     }
     .slide-video iframe {
@@ -129,7 +129,34 @@
       color: #00b2ff;
     }
 
-    /* Slide 2: Admins - кнопки как на сайте */
+    /* Кнопка "Присоединиться" - ТАКОЙ ЖЕ СТИЛЬ КАК В ШАПКЕ */
+    .join-btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      color: #00b2ff;
+      text-decoration: none;
+      margin-top: 12px;
+      font-weight: bold;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
+      transition: background 0.3s ease;
+      font-size: 1.1em;
+    }
+    .join-btn:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .join-btn svg {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      fill: #00b2ff;
+      flex-shrink: 0;
+    }
+
+    /* Slide 2: Admins */
     .slide-admins {
       text-align: center;
       padding-top: 5px;
@@ -152,18 +179,18 @@
       animation: slideInFromRight 0.6s forwards;
       min-width: 200px;
       width: auto;
-      padding: 10px 16px; /* такие же отступы как на сайте */
+      padding: 10px 16px;
       border-radius: 8px;
       background: rgba(0, 0, 0, 0.3);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
       transition: background 0.3s ease;
-      font-size: 1.1em; /* такой же размер как на сайте */
+      font-size: 1.1em;
     }
     .slide-admins .admin-link:hover {
       background: rgba(0, 0, 0, 0.5);
     }
     .slide-admins .admin-link svg {
-      width: 20px; /* как на сайте */
+      width: 20px;
       height: 20px;
       margin-right: 8px;
       fill: #00b2ff;
@@ -236,7 +263,7 @@
       }
     }
 
-    /* Slider navigation arrows - КРУГЛЫЕ, ТОНКИЕ, ПОЛУПРОЗРАЧНЫЕ */
+    /* Slider navigation arrows */
     .slider-arrow {
       position: absolute;
       top: 50%;
@@ -310,7 +337,7 @@
       background: rgba(255, 255, 255, 0.6);
     }
 
-    /* ====== ТОЛЬКО ЭТО ИЗМЕНЕНО: УБИРАЕМ ПУСТОЕ МЕСТО НАД ВИДЕО НА МОБИЛЬНЫХ ====== */
+    /* Mobile: убираем пустое место над видео */
     @media (max-width: 650px) {
       .slide-video {
         padding-top: 0 !important;
@@ -323,8 +350,16 @@
         padding-top: 5px !important;
         padding-bottom: 5px !important;
       }
+      .join-btn {
+        font-size: 0.95em;
+        padding: 8px 14px;
+      }
+      .join-btn svg {
+        width: 18px;
+        height: 18px;
+        margin-right: 6px;
+      }
     }
-    /* ====== КОНЕЦ ИЗМЕНЕНИЙ ====== */
 
     .admin-link-leh {
       display: flex;
@@ -625,7 +660,7 @@
     <!-- СЛАЙДЕР: видео + администраторы + правила -->
     <div class="slider-wrapper" id="sliderWrapper">
       <div class="slider-track" id="sliderTrack">
-        <!-- Слайд 1: Видео + описание (убрали отступ сверху) -->
+        <!-- Слайд 1: Видео + описание + кнопка -->
         <div class="slider-slide slide-video">
           <iframe width="560" height="315" src="https://www.youtube.com/embed/xexOO3cu9dw?si=-9bJoaCjbT_D0dc0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           <div class="video-description">
@@ -633,9 +668,14 @@
             Здесь мы делимся опытом путешествий по Ладакху, Гималаям и Тибету, рассказываем о маршрутах, 
             делимся фотографиями и находим попутчиков для новых приключений. 
             Присоединяйтесь к нашему чату в Telegram, чтобы быть в курсе событий!
+            <br>
+            <a href="https://t.me/leh_ladak" class="join-btn" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
+              Присоединиться к группе
+            </a>
           </div>
         </div>
-        <!-- Слайд 2: Администраторы (кнопки как на сайте) -->
+        <!-- Слайд 2: Администраторы -->
         <div class="slider-slide slide-admins">
           <h2>Администраторы группы в Telegram</h2>
           <a href="https://t.me/tashtashnatash72" class="admin-link" target="_blank" rel="noopener noreferrer">
@@ -685,7 +725,7 @@
         </div>
       </div>
 
-      <!-- Стрелки навигации (круглые, тонкие, полупрозрачные) -->
+      <!-- Стрелки навигации -->
       <button class="slider-arrow prev" id="sliderPrev" aria-label="Предыдущий слайд">&#10094;</button>
       <button class="slider-arrow next" id="sliderNext" aria-label="Следующий слайд">&#10095;</button>
     </div>
