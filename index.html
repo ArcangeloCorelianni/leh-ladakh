@@ -299,6 +299,83 @@
     .chat-buttons button:hover {
       background: #0099cc;
     }
+
+    /* --- Styles for Rules Modal --- */
+    .rules-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      overflow: auto;
+    }
+    .rules-modal-content {
+      background: rgba(20, 20, 30, 0.95);
+      margin: 5% auto;
+      padding: 30px;
+      max-width: 800px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Lora', serif;
+      line-height: 1.6;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      position: relative;
+      border: 1px solid #00b2ff;
+    }
+    .rules-modal-content .close-rules {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 36px;
+      font-weight: bold;
+      color: #aaa;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .rules-modal-content .close-rules:hover {
+      color: #fff;
+    }
+    .rules-modal-content h2 {
+      text-align: center;
+      margin-top: 0;
+      color: #00b2ff;
+      border-bottom: 1px solid #444;
+      padding-bottom: 10px;
+    }
+    .rules-modal-content ul {
+      list-style: none;
+      padding: 0;
+    }
+    .rules-modal-content ul li {
+      margin-bottom: 15px;
+      padding-left: 30px;
+      position: relative;
+    }
+    .rules-modal-content ul li:before {
+      content: "•";
+      color: #00b2ff;
+      font-size: 24px;
+      position: absolute;
+      left: 0;
+      top: -3px;
+    }
+    .rules-modal-content .emoji {
+      font-size: 1.2em;
+      margin-right: 5px;
+    }
+    .rules-modal-content p {
+      text-align: left;
+    }
+    /* Responsive rules modal */
+    @media (max-width: 600px) {
+      .rules-modal-content {
+        margin: 10% 5%;
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -308,15 +385,23 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
         Кто в Лех, кто по дрова?
       </a>
+      <a href="map-points.html" class="admin-link-leh" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
+        Карта Ладака / Места
+      </a>
       <a href="game/game.html" class="admin-link-leh" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
         Игра
       </a>
-      <a href="game/rules.html" class="admin-link-leh" target="_blank" rel="noopener noreferrer">
+      <!-- Кнопка правил группы теперь вызывает модальное окно -->
+      <a href="#" id="rulesModalBtn" class="admin-link-leh" onclick="openRulesModal(event)">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
         Правила группы
       </a>
-
+      <a href="https://ship-spb.onrender.com/friends" class="admin-link-leh" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
+        Друзья и партнеры
+      </a>
   </header>
   <main>
     <section>
@@ -402,8 +487,34 @@
     </div>
   </div>
 
+  <!-- Modal for Rules -->
+  <div id="rulesModal" class="rules-modal">
+    <div class="rules-modal-content">
+      <span class="close-rules" onclick="closeRulesModal()">&times;</span>
+      <h2>📜 Правила группы "Кто в Лех, кто по дрова?"</h2>
+      <p>Доброго времени суток всем путешественникам и участникам группы!<br>
+      Хотелось, чтобы мы в группе придерживались правил. Если будут дополнения, корректировки, давайте обсудим.</p>
+      
+      <p><span class="emoji">🔹</span> <strong>Правила группы "Кто в Лех, кто по дрова?"</strong> <span class="emoji">🔹</span><br>
+      (Путешествия по Ладакху)</p>
+      
+      <ul>
+        <li><strong>По теме</strong> – обсуждаем только путешествия, маршруты, советы, транспорт, жильё и всё, что связано с Ладакхом.</li>
+        <li><strong>Без флуда и спама</strong> – не засоряем чат нерелевантными сообщениями.</li>
+        <li><strong>Уважение к участникам</strong> – не допускается хамство, оскорбления, национальная, религиозная и любая другая рознь.</li>
+        <li><strong>Реклама и коммерция</strong> – только по согласованию с администрацией. Без согласия – удаляется.</li>
+        <li><strong>Полезная информация приветствуется</strong> – делитесь опытом, лайфхаками, контактами проверенных гидов и т.д.</li>
+        <li><strong>Вопросы по рекламе</strong> – пишите напрямую админам.</li>
+      </ul>
+      
+      <p><span class="emoji">🔔</span> <strong>Нарушение правил может привести к предупреждению или бану без обсуждений.</strong></p>
+      <p>Приятного общения и ярких путешествий! <span class="emoji">🏔️</span></p>
+      <p>Спасибо за внимание <span class="emoji">✨</span></p>
+    </div>
+  </div>
+
   <script>
-    // Gallery modal functionality
+    // Gallery modal functionality (unchanged)
     const modal = document.getElementById("galleryModal");
     const modalImg = document.getElementById("modalImg");
     const captionText = document.getElementById("caption");
@@ -411,11 +522,9 @@
     const prevBtn = document.getElementsByClassName("prev")[0];
     const nextBtn = document.getElementsByClassName("next")[0];
     
-    // Get all gallery images
     const galleryImages = document.querySelectorAll('.gallery img');
     let currentIndex = 0;
     
-    // Open modal when clicking on an image
     galleryImages.forEach((img, index) => {
       img.addEventListener('click', () => {
         currentIndex = index;
@@ -426,8 +535,6 @@
     function openModal() {
       modal.style.display = "block";
       updateModalImage();
-      
-      // Prevent background scrolling when modal is open
       document.body.style.overflow = "hidden";
     }
     
@@ -436,27 +543,23 @@
       captionText.innerHTML = galleryImages[currentIndex].alt;
     }
     
-    // Close modal
     closeBtn.onclick = function() {
       modal.style.display = "none";
-      document.body.style.overflow = "auto"; // Re-enable scrolling
+      document.body.style.overflow = "auto";
     }
     
-    // Navigate to previous image
     prevBtn.onclick = function(e) {
       e.stopPropagation();
       currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
       updateModalImage();
     }
     
-    // Navigate to next image
     nextBtn.onclick = function(e) {
       e.stopPropagation();
       currentIndex = (currentIndex + 1) % galleryImages.length;
       updateModalImage();
     }
     
-    // Close modal when clicking outside the image
     modal.onclick = function(event) {
       if (event.target === modal) {
         modal.style.display = "none";
@@ -464,7 +567,6 @@
       }
     }
     
-    // Keyboard navigation
     document.addEventListener('keydown', function(event) {
       if (modal.style.display === "block") {
         if (event.key === "Escape") {
@@ -478,67 +580,82 @@
           updateModalImage();
         }
       }
+      // Also close rules modal with Escape
+      if (event.key === "Escape") {
+        const rulesModal = document.getElementById('rulesModal');
+        if (rulesModal.style.display === "block") {
+          closeRulesModal();
+        }
+      }
     });
-    
-    // Chat functionality
-    let pageSize = 100; // Number of records per page
-    let currentPage = 1; // Start from the first page
+
+    // --- Rules Modal Functions ---
+    function openRulesModal(e) {
+      if (e) e.preventDefault();
+      document.getElementById('rulesModal').style.display = "block";
+      document.body.style.overflow = "hidden"; // Prevent scrolling
+    }
+
+    function closeRulesModal() {
+      document.getElementById('rulesModal').style.display = "none";
+      document.body.style.overflow = "auto";
+    }
+
+    // Close rules modal when clicking outside content
+    window.onclick = function(event) {
+      const rulesModal = document.getElementById('rulesModal');
+      if (event.target === rulesModal) {
+        closeRulesModal();
+      }
+    }
+
+    // Chat functionality (unchanged)
+    let pageSize = 100;
+    let currentPage = 1;
     let data_messages = []; 
     let secret_key_server = '123';
 
-    // Load the username from localStorage when the page loads
     window.onload = function() {
         const savedUsername = localStorage.getItem('username');
         if (savedUsername) {
             document.getElementById('user-name-input').value = savedUsername;
         }
         fetchMessages();
-        setInterval(fetchMessages, 25000); // Fetch every 25 seconds (25000 milliseconds)
+        setInterval(fetchMessages, 25000);
     };
 
     function simpleEncrypt(data, key) {
       let encryptedData = '';
       let j = 0;
-      
-      // Iterate through each character of the data
       for (let i = 0; i < data.length; i++) {
-        // Add a random character before the current character every 1st symbol
         let randomChar = String.fromCharCode(Math.floor(Math.random() * 94) + 32); 
         if (j >=key.length) {j=0;}
-        // Check if the random character is '*' and change it to '$' , * - symbol separator in file
         if (randomChar === '*') {
             randomChar = '$';
         }
         encryptedData += randomChar;
-
-        // Add the current character from the data
         let unicodeCurrentChar = data[i].charCodeAt(0);
         let unicodeCurrentKeyChar = key[j].charCodeAt(0);
         let encryptedChar = String.fromCharCode(unicodeCurrentKeyChar+unicodeCurrentChar);
         encryptedData += encryptedChar;
         j++;
       }
-
       return encryptedData;
     }
 
     function simpleDecrypt(data, key) {
         let decryptedData = '';
         let j = 0;
-
-        // Iterate through the modified data
         for (let i = 0; i < data.length; i++) {
             if (j >= key.length) {
                 j = 0;
             }
-            // Skip every first symbol (i.e., indices 0, 2, 4, 6, ...)
             if (i % 2 === 0) {
-                continue;  // Skip this byte (this is where the random character was added during encryption)
+                continue;
             }
-            let unicodeCurrentChar = data.charCodeAt(i); // Get the Unicode value of the encrypted character
-            let unicodeCurrentKeyChar = key[j].charCodeAt(0); // Get the Unicode value of the key character
-            let decryptedChar = String.fromCharCode(unicodeCurrentChar - unicodeCurrentKeyChar); // Decrypt the character
-            // Append the character to decryptedData
+            let unicodeCurrentChar = data.charCodeAt(i);
+            let unicodeCurrentKeyChar = key[j].charCodeAt(0);
+            let decryptedChar = String.fromCharCode(unicodeCurrentChar - unicodeCurrentKeyChar);
             decryptedData += decryptedChar;
             j++;
         }
@@ -578,40 +695,33 @@
                 data_messages = data;
                 console.log("Fetched data:", data);
 
-                // Get the chat area element
                 const chatArea = document.getElementById('chat-area');
                 chatArea.innerHTML = "";
 
-                // Sort and display the messages
                 data.sort((a, b) => new Date(b.created) - new Date(a.created));
 
                 data.forEach(record => {
                     const messageElement = document.createElement('div');
                     messageElement.classList.add('message');
 
-                    // Generate a color for the user based on their username
                     const userColor = stringToColor(record.user);
-
-                    // Set the background color for each message
                     messageElement.style.backgroundColor = userColor;
-                    const userKey = '123';  // Get the inputted key
+                    const userKey = '123';
                     let messageContent = '';
                     
-                    
-                        const decryptedMessage = simpleDecrypt(record.message, '123');
-                        messageContent = `
+                    const decryptedMessage = simpleDecrypt(record.message, '123');
+                    messageContent = `
                         <p><strong>${record.user}</strong>: ${decryptedMessage}</p>
                         <small>Sent at: ${record.time_date_stamp}</small>
                         <hr>`;
-                        console.log(messageContent);
+                    console.log(messageContent);
 
                     messageElement.innerHTML = messageContent;
                     chatArea.appendChild(messageElement);
                 });
 
-                // Check if there are more messages to fetch (i.e., data.length < pageSize)
                 if (data.length === pageSize) {
-                    currentPage++;  // Move to the next page
+                    currentPage++;
                 }
             })
             .catch(error => {
@@ -620,13 +730,9 @@
     }
 
     function sendAndsaveMessage() {
-        // Get the value from the message input field
         const field_message = document.getElementById('message-input').value;
-
-        // Get the value from the username input field
         const field_username = document.getElementById('user-name-input').value;
 
-        // Check if the message is not empty and username is provided
         if (field_message.trim() === "") {
             console.error("Message cannot be empty.");
             return;
@@ -636,64 +742,52 @@
             return;
         }
 
-        // Save the username to localStorage
         localStorage.setItem('username', field_username);
 
         const encrypted_field_message = simpleEncrypt(field_message, secret_key_server);
 
-        // Data you want to send (message and username)
         const dataToUpdate = {
-            message: encrypted_field_message, // Use the message from the input field
-            user: field_username,   // Use the username from the input field
-            time_date_stamp: new Date().toISOString() // Timestamp for when the message is sent
+            message: encrypted_field_message,
+            user: field_username,
+            time_date_stamp: new Date().toISOString()
         };
 
-        
-        const url = "https://focusedbadge-us.backendless.app/api/data/messy_buggy"; // Backendless API endpoint
-
-        // Headers for the POST request
+        const url = "https://focusedbadge-us.backendless.app/api/data/messy_buggy";
         const headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'application-id': '99451B96-0AE0-4556-A88D-84D2500E2AC5',  // Your App ID
-            'api-key': 'E502729E-2312-47D4-9AF5-9084CDEAB1C7'             // Your JS API Key
+            'application-id': '99451B96-0AE0-4556-A88D-84D2500E2AC5',
+            'api-key': 'E502729E-2312-47D4-9AF5-9084CDEAB1C7'
         };
 
-        // Making the POST request using fetch
         fetch(url, {
-            method: 'POST', // Changed to POST since you're adding a new message
+            method: 'POST',
             headers: headers,
-            body: JSON.stringify(dataToUpdate)  // Convert the data to JSON string
+            body: JSON.stringify(dataToUpdate)
         })
         .then(response => {
             if (!response.ok) {
                 console.log(dataToUpdate);
                 throw new Error('Failed to update data: ' + response.statusText);
             }
-            return response.json();  // Parse the response JSON
+            return response.json();
         })
         .then(data => {
-            console.log("Response Data:", data);  // Handle the response data after update
-            // Clear the input fields after the message is sent
+            console.log("Response Data:", data);
             document.getElementById('message-input').value = "";
-
-            // Fetch updated messages
             fetchMessages();
         })
         .catch(error => {
-            console.error("Error:", error);  // Handle any errors that occur during the request
+            console.error("Error:", error);
         });
     }
 
     function deleteMessages() {
-        // Assuming the API supports deleting messages by objectId using the DELETE method.
         const messageIdsToDelete = [];
         data = data_messages;
 
-        // Here, let's assume you want to delete the first 10 messages from the fetched data.
-        // You can modify this logic to delete based on any condition you prefer.
         data.slice(0, 10).forEach(record => {
-            messageIdsToDelete.push(record.objectId);  // Assuming objectId is the identifier of the message
+            messageIdsToDelete.push(record.objectId);
             console.log(record.objectId);
         });
 
@@ -702,9 +796,8 @@
             return;
         }
 
-        // Loop over each message ID and delete them using DELETE method
         messageIdsToDelete.forEach(id => {
-            const url = `https://focusedbadge-us.backendless.app/api/data/messy_buggy/${id}`;  // Delete endpoint with message ID
+            const url = `https://focusedbadge-us.backendless.app/api/data/messy_buggy/${id}`;
             const headers = {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -724,13 +817,12 @@
                 });
         });
 
-        // After deleting, you may want to refresh the messages or update the chat
-        fetchMessages();  // Re-fetch messages to show updated chat
+        fetchMessages();
     }
 
     document.getElementById('send-btn').addEventListener('click', sendAndsaveMessage);
     document.getElementById('refresh-btn').addEventListener('click', fetchMessages);
-    document.getElementById('delete-btn').addEventListener('click', deleteMessages);
+    // document.getElementById('delete-btn').addEventListener('click', deleteMessages);
   </script>
 </body>
 </html>
