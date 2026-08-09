@@ -87,23 +87,25 @@
       display: flex;
       transition: transform 0.5s ease;
       will-change: transform;
+      align-items: stretch;
     }
 
     .slider-slide {
       flex: 0 0 100%;
-      padding: 20px 30px;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 380px;
+      padding: 20px 30px;
+      min-height: 100%;
     }
 
-    /* Slide 1: Video — убрали лишний отступ сверху */
+    /* Slide 1: Video */
     .slide-video {
       text-align: center;
-      padding-top: 10px; /* минимальный отступ */
+      padding-top: 10px;
+      padding-bottom: 10px;
     }
     .slide-video iframe {
       width: 100%;
@@ -111,7 +113,7 @@
       height: 315px;
       border: none;
       border-radius: 8px;
-      margin-top: 0; /* убираем лишний отступ */
+      margin-top: 0;
     }
     .slide-video .video-description {
       max-width: 560px;
@@ -127,15 +129,16 @@
       color: #00b2ff;
     }
 
-    /* Slide 2: Admins — убрали лишний отступ сверху */
+    /* Slide 2: Admins — убрали лишние отступы, чтобы не было пустого места */
     .slide-admins {
       text-align: center;
-      padding-top: 10px;
+      padding-top: 5px;
+      padding-bottom: 5px;
     }
     .slide-admins h2 {
-      margin-top: 0; /* убираем отступ у заголовка */
-      margin-bottom: 15px;
-      font-size: 1.4rem;
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
     }
     .slide-admins .admin-link {
       display: flex;
@@ -143,13 +146,13 @@
       align-items: center;
       color: #00b2ff;
       text-decoration: none;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
       font-weight: bold;
       opacity: 0;
       animation: slideInFromRight 0.6s forwards;
-      min-width: 220px;
+      min-width: 200px;
       width: auto;
-      padding: 10px 20px;
+      padding: 8px 18px;
       border-radius: 8px;
       background: rgba(0, 0, 0, 0.3);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
@@ -159,8 +162,8 @@
       background: rgba(0, 0, 0, 0.5);
     }
     .slide-admins .admin-link svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       margin-right: 8px;
       fill: #00b2ff;
       flex-shrink: 0;
@@ -178,40 +181,47 @@
       text-align: left;
       max-width: 700px;
       margin: 0 auto;
+      padding-top: 5px;
+      padding-bottom: 5px;
     }
     .slide-rules h2 {
       text-align: center;
       color: #00b2ff;
       border-bottom: 1px solid #444;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      margin-top: 0;
+      font-size: 1.3rem;
     }
     .slide-rules ul {
       list-style: none;
       padding: 0;
+      margin: 0;
     }
     .slide-rules ul li {
-      margin-bottom: 12px;
-      padding-left: 30px;
+      margin-bottom: 8px;
+      padding-left: 28px;
       position: relative;
-      line-height: 1.5;
+      line-height: 1.4;
     }
     .slide-rules ul li:before {
       content: "•";
       color: #00b2ff;
-      font-size: 24px;
+      font-size: 22px;
       position: absolute;
       left: 0;
       top: -3px;
     }
     .slide-rules .rules-intro {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
     }
     .slide-rules .rules-footer {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 12px;
       font-style: italic;
+      font-size: 0.95rem;
     }
 
     @keyframes slideInFromRight {
@@ -225,7 +235,7 @@
       }
     }
 
-    /* Slider navigation arrows - КРУГЛЫЕ, нормального размера */
+    /* Slider navigation arrows - КРУГЛЫЕ */
     .slider-arrow {
       position: absolute;
       top: 50%;
@@ -298,7 +308,7 @@
       background: rgba(255, 255, 255, 0.6);
     }
 
-    /* Responsive - только убираем лишние отступы сверху */
+    /* Responsive */
     @media (max-width: 650px) {
       .slider-arrow {
         width: 40px;
@@ -312,8 +322,7 @@
         right: 4px;
       }
       .slider-slide {
-        min-height: 340px;
-        padding: 20px 15px;
+        padding: 12px 12px;
       }
       .slide-video iframe {
         height: 200px;
@@ -324,13 +333,28 @@
         margin-top: 10px;
       }
       .slide-admins .admin-link {
-        min-width: 180px;
-        font-size: 0.9rem;
-        padding: 8px 16px;
+        min-width: 160px;
+        font-size: 0.85rem;
+        padding: 6px 14px;
       }
       .slide-admins .admin-link svg {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
+      }
+      .slide-admins h2 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+      .slide-rules {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+      .slide-rules h2 {
+        font-size: 1.1rem;
+      }
+      .slide-rules ul li {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
       }
     }
     /* --- END SLIDER STYLES --- */
@@ -624,7 +648,7 @@
     <!-- СЛАЙДЕР: видео + администраторы + правила -->
     <div class="slider-wrapper" id="sliderWrapper">
       <div class="slider-track" id="sliderTrack">
-        <!-- Слайд 1: Видео + описание (убрали лишний отступ сверху) -->
+        <!-- Слайд 1: Видео + описание -->
         <div class="slider-slide slide-video">
           <iframe width="560" height="315" src="https://www.youtube.com/embed/xexOO3cu9dw?si=-9bJoaCjbT_D0dc0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           <div class="video-description">
@@ -634,7 +658,7 @@
             Присоединяйтесь к нашему чату в Telegram, чтобы быть в курсе событий!
           </div>
         </div>
-        <!-- Слайд 2: Администраторы (убрали лишний отступ сверху) -->
+        <!-- Слайд 2: Администраторы — компактно, без пустого места -->
         <div class="slider-slide slide-admins">
           <h2>Администраторы группы в Telegram</h2>
           <a href="https://t.me/tashtashnatash72" class="admin-link" target="_blank" rel="noopener noreferrer">
@@ -664,27 +688,27 @@
         </div>
         <!-- Слайд 3: Правила группы -->
         <div class="slider-slide slide-rules">
-          <h2>📜 Правила группы "Кто в Лех, кто по дрова?"</h2>
+          <h2>📜 Правила группы</h2>
           <p class="rules-intro">
             Доброго времени суток всем путешественникам и участникам группы!<br>
-            Хотелось, чтобы мы в группе придерживались правил. Если будут дополнения, корректировки, давайте обсудим.
+            Хотелось, чтобы мы в группе придерживались правил.
           </p>
           <ul>
             <li><strong>По теме</strong> – обсуждаем только путешествия, маршруты, советы, транспорт, жильё и всё, что связано с Ладакхом.</li>
             <li><strong>Без флуда и спама</strong> – не засоряем чат нерелевантными сообщениями.</li>
             <li><strong>Уважение к участникам</strong> – не допускается хамство, оскорбления, национальная, религиозная и любая другая рознь.</li>
             <li><strong>Реклама и коммерция</strong> – только по согласованию с администрацией. Без согласия – удаляется.</li>
-            <li><strong>Полезная информация приветствуется</strong> – делитесь опытом, лайфхаками, контактами проверенных гидов и т.д.</li>
+            <li><strong>Полезная информация приветствуется</strong> – делитесь опытом, лайфхаками, контактами проверенных гидов.</li>
             <li><strong>Вопросы по рекламе</strong> – пишите напрямую админам.</li>
           </ul>
           <p class="rules-footer">
-            🔔 <strong>Нарушение правил может привести к предупреждению или бану без обсуждений.</strong><br>
+            🔔 <strong>Нарушение правил может привести к предупреждению или бану.</strong><br>
             Приятного общения и ярких путешествий! 🏔️
           </p>
         </div>
       </div>
 
-      <!-- Стрелки навигации - КРУГЛЫЕ -->
+      <!-- Стрелки навигации -->
       <button class="slider-arrow prev" id="sliderPrev" aria-label="Предыдущий слайд">&#10094;</button>
       <button class="slider-arrow next" id="sliderNext" aria-label="Следующий слайд">&#10095;</button>
     </div>
@@ -780,6 +804,34 @@
       goToSlide(2);
       document.getElementById('sliderWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
+    // Функция для синхронизации высоты слайдов
+    function syncSlideHeights() {
+      // Сбрасываем min-height для получения естественной высоты
+      slides.forEach(slide => {
+        slide.style.minHeight = 'auto';
+      });
+      
+      // Находим максимальную высоту
+      let maxHeight = 0;
+      slides.forEach(slide => {
+        const height = slide.offsetHeight;
+        if (height > maxHeight) maxHeight = height;
+      });
+      
+      // Устанавливаем единую высоту для всех слайдов
+      slides.forEach(slide => {
+        slide.style.minHeight = maxHeight + 'px';
+      });
+    }
+
+    // Вызываем после загрузки и при изменении размера окна
+    window.addEventListener('load', () => {
+      syncSlideHeights();
+      track.style.transform = `translateX(0%)`;
+    });
+
+    window.addEventListener('resize', syncSlideHeights);
 
     prevBtn.addEventListener('click', prevSlide);
     nextBtn.addEventListener('click', nextSlide);
