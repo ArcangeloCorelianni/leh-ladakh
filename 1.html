@@ -101,10 +101,10 @@
       min-height: 100%;
     }
 
-    /* Slide 1: Video - убрали лишний отступ сверху */
+    /* Slide 1: Video */
     .slide-video {
       text-align: center;
-      padding-top: 0; /* убрали отступ сверху */
+      padding-top: 0;
       padding-bottom: 10px;
     }
     .slide-video iframe {
@@ -129,7 +129,7 @@
       color: #00b2ff;
     }
 
-    /* Slide 2: Admins - кнопки как на сайте */
+    /* Slide 2: Admins */
     .slide-admins {
       text-align: center;
       padding-top: 5px;
@@ -152,18 +152,18 @@
       animation: slideInFromRight 0.6s forwards;
       min-width: 200px;
       width: auto;
-      padding: 10px 16px; /* такие же отступы как на сайте */
+      padding: 10px 16px;
       border-radius: 8px;
       background: rgba(0, 0, 0, 0.3);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
       transition: background 0.3s ease;
-      font-size: 1.1em; /* такой же размер как на сайте */
+      font-size: 1.1em;
     }
     .slide-admins .admin-link:hover {
       background: rgba(0, 0, 0, 0.5);
     }
     .slide-admins .admin-link svg {
-      width: 20px; /* как на сайте */
+      width: 20px;
       height: 20px;
       margin-right: 8px;
       fill: #00b2ff;
@@ -236,7 +236,7 @@
       }
     }
 
-    /* Slider navigation arrows - КРУГЛЫЕ, ТОНКИЕ, ПОЛУПРОЗРАЧНЫЕ */
+    /* Slider navigation arrows */
     .slider-arrow {
       position: absolute;
       top: 50%;
@@ -310,57 +310,124 @@
       background: rgba(255, 255, 255, 0.6);
     }
 
-    /* Responsive */
+    /* ====== МОБИЛЬНЫЕ СТИЛИ ====== */
     @media (max-width: 650px) {
       .slider-arrow {
-        width: 34px;
-        height: 34px;
-        font-size: 1.2rem;
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
       }
       .slider-arrow.prev {
-        left: 6px;
+        left: 4px;
       }
       .slider-arrow.next {
-        right: 6px;
+        right: 4px;
       }
       .slider-slide {
-        padding: 12px 12px;
+        padding: 10px 10px;
       }
+      
+      /* УМЕНЬШАЕМ ВИДЕО НА МОБИЛЬНЫХ */
       .slide-video iframe {
-        height: 200px;
+        height: 180px !important;
+        max-height: 180px;
       }
       .slide-video .video-description {
-        font-size: 0.9rem;
-        padding: 12px 15px;
-        margin-top: 10px;
+        font-size: 0.8rem;
+        padding: 10px 12px;
+        margin-top: 8px;
       }
       .slide-admins .admin-link {
-        min-width: 160px;
-        font-size: 0.95em;
-        padding: 8px 14px;
-        margin-bottom: 10px;
+        min-width: 140px;
+        font-size: 0.85em;
+        padding: 7px 12px;
+        margin-bottom: 8px;
       }
       .slide-admins .admin-link svg {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
       }
       .slide-admins h2 {
-        font-size: 1.1rem;
-        margin-bottom: 12px;
+        font-size: 1rem;
+        margin-bottom: 10px;
       }
       .slide-rules {
-        padding-left: 8px;
-        padding-right: 8px;
+        padding-left: 6px;
+        padding-right: 6px;
       }
       .slide-rules h2 {
-        font-size: 1.1rem;
+        font-size: 1rem;
       }
       .slide-rules ul li {
+        font-size: 0.82rem;
+        margin-bottom: 5px;
+        padding-left: 22px;
+      }
+      .slide-rules ul li:before {
+        font-size: 18px;
+      }
+      .slide-rules .rules-intro {
+        font-size: 0.8rem;
+      }
+      .slide-rules .rules-footer {
+        font-size: 0.8rem;
+      }
+      
+      /* Шапка */
+      header h1 {
         font-size: 0.9rem;
-        margin-bottom: 6px;
+      }
+      .admin-link-leh {
+        font-size: 0.85em !important;
+        padding: 6px 12px !important;
+        margin-bottom: 6px !important;
+      }
+      .admin-link-leh svg {
+        width: 16px !important;
+        height: 16px !important;
+        margin-right: 6px !important;
+      }
+      
+      /* Модалка правил */
+      .rules-modal-content {
+        margin: 8% 5%;
+        padding: 16px;
+      }
+      .rules-modal-content h2 {
+        font-size: 1.1rem;
+      }
+      .rules-modal-content ul li {
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+        padding-left: 22px;
       }
     }
-    /* --- END SLIDER STYLES --- */
+
+    @media (max-width: 400px) {
+      .slide-video iframe {
+        height: 150px !important;
+        max-height: 150px;
+      }
+      .slider-slide {
+        padding: 8px 6px;
+      }
+      .slide-admins .admin-link {
+        min-width: 120px;
+        font-size: 0.75em;
+        padding: 5px 8px;
+        margin-bottom: 6px;
+      }
+      .slide-admins .admin-link svg {
+        width: 14px;
+        height: 14px;
+        margin-right: 4px;
+      }
+      .slide-rules ul li {
+        font-size: 0.75rem;
+      }
+    }
+    /* ====== КОНЕЦ МОБИЛЬНЫХ СТИЛЕЙ ====== */
 
     .admin-link-leh {
       display: flex;
@@ -658,10 +725,10 @@
       </p>
     </section>
 
-    <!-- СЛАЙДЕР: видео + администраторы + правила -->
+    <!-- СЛАЙДЕР -->
     <div class="slider-wrapper" id="sliderWrapper">
       <div class="slider-track" id="sliderTrack">
-        <!-- Слайд 1: Видео + описание (убрали отступ сверху) -->
+        <!-- Слайд 1: Видео -->
         <div class="slider-slide slide-video">
           <iframe width="560" height="315" src="https://www.youtube.com/embed/xexOO3cu9dw?si=-9bJoaCjbT_D0dc0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           <div class="video-description">
@@ -671,7 +738,7 @@
             Присоединяйтесь к нашему чату в Telegram, чтобы быть в курсе событий!
           </div>
         </div>
-        <!-- Слайд 2: Администраторы (кнопки как на сайте) -->
+        <!-- Слайд 2: Администраторы -->
         <div class="slider-slide slide-admins">
           <h2>Администраторы группы в Telegram</h2>
           <a href="https://t.me/tashtashnatash72" class="admin-link" target="_blank" rel="noopener noreferrer">
@@ -721,7 +788,7 @@
         </div>
       </div>
 
-      <!-- Стрелки навигации (круглые, тонкие, полупрозрачные) -->
+      <!-- Стрелки навигации -->
       <button class="slider-arrow prev" id="sliderPrev" aria-label="Предыдущий слайд">&#10094;</button>
       <button class="slider-arrow next" id="sliderNext" aria-label="Следующий слайд">&#10095;</button>
     </div>
