@@ -6,11 +6,11 @@
   <meta name="yandex-verification" content="f10bc1dcc02fc8ee" />
   <title>Ле, Ладакх. Русскоязычное сообщество путешественников в Гималаях и Тибете - "Кто в Лех, кто по дрова?"</title>
   <meta name="description" content="Сообщество русскоязычных путешественников в Гималаях, Тибете и Ладаке. Делимся опытом, фотографиями и советами." />
-  <meta property="og:image" content="https://cdn.glitch.global/bea12857-f511-461d-adbc-da5b46687f87/IMG_20231118_212542_728.jpg?v=1750048499482">
+  <meta property="og:image" content="https://i.ibb.co/B2sdZc01/1000059335.jpg">
   <link rel="icon" href="IMG_20231118_212542_728.ico" type="image/x-icon">
   <meta name="keywords" content="путешествия, Гималаи, Тибет, Ладак, туризм, русскоязычное сообщество, Кто в Лех, кто по дрова, Лех" />
   <meta name="google-site-verification" content="Vy_7IEiB5LnDvD_vopy0n6hge5lkuvSpSYA_0hAaePQ" />
-  <link rel="canonical" href="https://leh-ladakh.onrender.com/" />
+  <link rel="canonical" href="https://leh-ladakh-travel.onrender.com/" />
   <style>
     html {
       overflow-x: hidden;  
@@ -101,10 +101,10 @@
       min-height: 100%;
     }
 
-    /* Slide 1: Video */
+    /* Slide 1: Video - убрали лишний отступ сверху */
     .slide-video {
       text-align: center;
-      padding-top: 10px;
+      padding-top: 0; /* убрали отступ сверху */
       padding-bottom: 10px;
     }
     .slide-video iframe {
@@ -129,7 +129,7 @@
       color: #00b2ff;
     }
 
-    /* Slide 2: Admins */
+    /* Slide 2: Admins - кнопки как на сайте */
     .slide-admins {
       text-align: center;
       padding-top: 5px;
@@ -146,24 +146,25 @@
       align-items: center;
       color: #00b2ff;
       text-decoration: none;
-      margin-bottom: 12px; /* такое же расстояние как на сайте */
+      margin-bottom: 12px;
       font-weight: bold;
       opacity: 0;
       animation: slideInFromRight 0.6s forwards;
       min-width: 200px;
       width: auto;
-      padding: 8px 18px;
+      padding: 10px 16px; /* такие же отступы как на сайте */
       border-radius: 8px;
       background: rgba(0, 0, 0, 0.3);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
       transition: background 0.3s ease;
+      font-size: 1.1em; /* такой же размер как на сайте */
     }
     .slide-admins .admin-link:hover {
       background: rgba(0, 0, 0, 0.5);
     }
     .slide-admins .admin-link svg {
-      width: 18px;
-      height: 18px;
+      width: 20px; /* как на сайте */
+      height: 20px;
       margin-right: 8px;
       fill: #00b2ff;
       flex-shrink: 0;
@@ -242,12 +243,12 @@
       transform: translateY(-50%);
       width: 40px;
       height: 40px;
-      border-radius: 50% !important; /* КРУГЛЫЕ */
+      border-radius: 50% !important;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.4rem;
-      font-weight: 100; /* ТОНКАЯ СТРЕЛКА */
+      font-weight: 100;
       color: rgba(255, 255, 255, 0.3);
       background: rgba(0, 0, 0, 0.15);
       backdrop-filter: blur(2px);
@@ -335,13 +336,13 @@
       }
       .slide-admins .admin-link {
         min-width: 160px;
-        font-size: 0.85rem;
-        padding: 6px 14px;
+        font-size: 0.95em;
+        padding: 8px 14px;
         margin-bottom: 10px;
       }
       .slide-admins .admin-link svg {
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
       }
       .slide-admins h2 {
         font-size: 1.1rem;
@@ -367,10 +368,20 @@
       align-items: center;
       color: #00b2ff;
       text-decoration: none;
-      margin-bottom: 12px; /* единое расстояние */
+      margin-bottom: 12px;
       font-weight: bold;
       opacity: 0;
       animation: slideInFromRight 0.6s forwards;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
+      transition: background 0.3s ease;
+      font-size: 1.1em;
+    }
+    
+    .admin-link-leh:hover {
+      background: rgba(0, 0, 0, 0.5);
     }
     
     .admin-link-leh svg{
@@ -650,7 +661,7 @@
     <!-- СЛАЙДЕР: видео + администраторы + правила -->
     <div class="slider-wrapper" id="sliderWrapper">
       <div class="slider-track" id="sliderTrack">
-        <!-- Слайд 1: Видео + описание -->
+        <!-- Слайд 1: Видео + описание (убрали отступ сверху) -->
         <div class="slider-slide slide-video">
           <iframe width="560" height="315" src="https://www.youtube.com/embed/xexOO3cu9dw?si=-9bJoaCjbT_D0dc0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           <div class="video-description">
@@ -660,7 +671,7 @@
             Присоединяйтесь к нашему чату в Telegram, чтобы быть в курсе событий!
           </div>
         </div>
-        <!-- Слайд 2: Администраторы -->
+        <!-- Слайд 2: Администраторы (кнопки как на сайте) -->
         <div class="slider-slide slide-admins">
           <h2>Администраторы группы в Telegram</h2>
           <a href="https://t.me/tashtashnatash72" class="admin-link" target="_blank" rel="noopener noreferrer">
