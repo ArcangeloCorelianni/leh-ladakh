@@ -100,9 +100,10 @@
       min-height: 380px;
     }
 
-    /* Slide 1: Video */
+    /* Slide 1: Video — убрали лишний отступ сверху */
     .slide-video {
       text-align: center;
+      padding-top: 10px; /* минимальный отступ */
     }
     .slide-video iframe {
       width: 100%;
@@ -110,6 +111,7 @@
       height: 315px;
       border: none;
       border-radius: 8px;
+      margin-top: 0; /* убираем лишний отступ */
     }
     .slide-video .video-description {
       max-width: 560px;
@@ -125,9 +127,15 @@
       color: #00b2ff;
     }
 
-    /* Slide 2: Admins */
+    /* Slide 2: Admins — убрали лишний отступ сверху */
     .slide-admins {
       text-align: center;
+      padding-top: 10px;
+    }
+    .slide-admins h2 {
+      margin-top: 0; /* убираем отступ у заголовка */
+      margin-bottom: 15px;
+      font-size: 1.4rem;
     }
     .slide-admins .admin-link {
       display: flex;
@@ -616,7 +624,7 @@
     <!-- СЛАЙДЕР: видео + администраторы + правила -->
     <div class="slider-wrapper" id="sliderWrapper">
       <div class="slider-track" id="sliderTrack">
-        <!-- Слайд 1: Видео + описание -->
+        <!-- Слайд 1: Видео + описание (убрали лишний отступ сверху) -->
         <div class="slider-slide slide-video">
           <iframe width="560" height="315" src="https://www.youtube.com/embed/xexOO3cu9dw?si=-9bJoaCjbT_D0dc0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           <div class="video-description">
@@ -626,7 +634,7 @@
             Присоединяйтесь к нашему чату в Telegram, чтобы быть в курсе событий!
           </div>
         </div>
-        <!-- Слайд 2: Администраторы -->
+        <!-- Слайд 2: Администраторы (убрали лишний отступ сверху) -->
         <div class="slider-slide slide-admins">
           <h2>Администраторы группы в Telegram</h2>
           <a href="https://t.me/tashtashnatash72" class="admin-link" target="_blank" rel="noopener noreferrer">
