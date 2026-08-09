@@ -28,28 +28,23 @@
     }
     header {
       background: rgba(0, 0, 0, 0.6);
-      padding: 15px 10px;
+      padding: 20px;
       text-align: center;
       position: relative;
       z-index: 10;
     }
     h1 {
       margin: 0;
-      font-size: 1rem;
+      font-size: 1.2rem;
     }
-    h2 {
-      text-align: center;
-      font-size: 1.1rem;
-      margin: 5px 0 10px 0;
-    }
-    p {
+    h2, p {
       text-align: center;
     }
     main {
       background: rgba(0, 0, 0, 0.5);
       max-width: 900px;
-      margin: 15px auto;
-      padding: 15px;
+      margin: 30px auto;
+      padding: 20px;
       border-radius: 8px;
     }
 
@@ -84,7 +79,7 @@
       position: relative;
       overflow: hidden;
       border-radius: 8px;
-      margin: 10px 0;
+      margin: 20px 0;
       background: rgba(0, 0, 0, 0.3);
     }
 
@@ -96,38 +91,35 @@
 
     .slider-slide {
       flex: 0 0 100%;
-      padding: 8px 10px;
+      padding: 20px 30px;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 280px;
+      min-height: 380px;
     }
 
     /* Slide 1: Video */
     .slide-video {
       text-align: center;
-      gap: 6px;
-      padding-top: 4px;
-      padding-bottom: 4px;
     }
     .slide-video iframe {
       width: 100%;
       max-width: 560px;
-      height: 280px;
+      height: 315px;
       border: none;
       border-radius: 8px;
     }
     .slide-video .video-description {
       max-width: 560px;
-      padding: 6px 12px;
+      margin-top: 15px;
+      padding: 15px 20px;
       background: rgba(0, 0, 0, 0.4);
-      border-radius: 6px;
-      font-size: 0.85rem;
-      line-height: 1.4;
+      border-radius: 8px;
+      font-size: 1rem;
+      line-height: 1.6;
       text-align: center;
-      margin-top: 4px;
     }
     .slide-video .video-description strong {
       color: #00b2ff;
@@ -136,12 +128,6 @@
     /* Slide 2: Admins */
     .slide-admins {
       text-align: center;
-      padding-top: 4px;
-      padding-bottom: 4px;
-    }
-    .slide-admins h2 {
-      margin: 2px 0 8px 0;
-      font-size: 1rem;
     }
     .slide-admins .admin-link {
       display: flex;
@@ -149,83 +135,75 @@
       align-items: center;
       color: #00b2ff;
       text-decoration: none;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
       font-weight: bold;
       opacity: 0;
       animation: slideInFromRight 0.6s forwards;
-      min-width: 160px;
+      min-width: 220px;
       width: auto;
-      padding: 5px 14px;
-      border-radius: 6px;
+      padding: 10px 20px;
+      border-radius: 8px;
       background: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
       transition: background 0.3s ease;
-      font-size: 0.85rem;
     }
     .slide-admins .admin-link:hover {
       background: rgba(0, 0, 0, 0.5);
     }
     .slide-admins .admin-link svg {
-      width: 16px;
-      height: 16px;
-      margin-right: 6px;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
       fill: #00b2ff;
       flex-shrink: 0;
     }
-    .slide-admins .admin-link:nth-child(2) { animation-delay: 0.1s; }
-    .slide-admins .admin-link:nth-child(3) { animation-delay: 0.2s; }
-    .slide-admins .admin-link:nth-child(4) { animation-delay: 0.3s; }
-    .slide-admins .admin-link:nth-child(5) { animation-delay: 0.4s; }
-    .slide-admins .admin-link:nth-child(6) { animation-delay: 0.5s; }
-    .slide-admins .admin-link:nth-child(7) { animation-delay: 0.6s; }
-    .slide-admins .admin-link:nth-child(8) { animation-delay: 0.7s; }
+    .slide-admins .admin-link:nth-child(2) { animation-delay: 0.3s; }
+    .slide-admins .admin-link:nth-child(3) { animation-delay: 0.6s; }
+    .slide-admins .admin-link:nth-child(4) { animation-delay: 0.9s; }
+    .slide-admins .admin-link:nth-child(5) { animation-delay: 1.2s; }
+    .slide-admins .admin-link:nth-child(6) { animation-delay: 1.5s; }
+    .slide-admins .admin-link:nth-child(7) { animation-delay: 1.8s; }
+    .slide-admins .admin-link:nth-child(8) { animation-delay: 2.1s; }
 
     /* Slide 3: Rules */
     .slide-rules {
       text-align: left;
       max-width: 700px;
       margin: 0 auto;
-      padding-top: 4px;
-      padding-bottom: 4px;
     }
     .slide-rules h2 {
       text-align: center;
       color: #00b2ff;
       border-bottom: 1px solid #444;
-      padding-bottom: 5px;
-      margin-bottom: 10px;
-      font-size: 1.1rem;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
     }
     .slide-rules ul {
       list-style: none;
       padding: 0;
-      margin: 5px 0;
     }
     .slide-rules ul li {
-      margin-bottom: 5px;
-      padding-left: 20px;
+      margin-bottom: 12px;
+      padding-left: 30px;
       position: relative;
-      line-height: 1.4;
-      font-size: 0.85rem;
+      line-height: 1.5;
     }
     .slide-rules ul li:before {
       content: "•";
       color: #00b2ff;
-      font-size: 16px;
+      font-size: 24px;
       position: absolute;
       left: 0;
-      top: -1px;
+      top: -3px;
     }
     .slide-rules .rules-intro {
       text-align: center;
-      margin-bottom: 8px;
-      font-size: 0.85rem;
+      margin-bottom: 20px;
     }
     .slide-rules .rules-footer {
       text-align: center;
-      margin-top: 8px;
+      margin-top: 20px;
       font-style: italic;
-      font-size: 0.85rem;
     }
 
     @keyframes slideInFromRight {
@@ -239,63 +217,62 @@
       }
     }
 
-    /* Slider navigation arrows - ТОНКИЕ и КРУГЛЫЕ */
+    /* Slider navigation arrows - КРУГЛЫЕ, нормального размера */
     .slider-arrow {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 32px;
-      height: 32px;
+      width: 48px;
+      height: 48px;
       border-radius: 50% !important;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
-      color: rgba(255, 255, 255, 0.7);
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 1.8rem;
+      color: rgba(255, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(6px);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
       cursor: pointer;
       user-select: none;
       transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
       z-index: 10;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
       padding: 0;
       line-height: 1;
-      font-weight: 300;
     }
 
     .slider-arrow:hover {
-      background: rgba(0, 0, 0, 0.5);
-      transform: translateY(-50%) scale(1.05);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.7);
+      transform: translateY(-50%) scale(1.08);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.4);
     }
 
     .slider-arrow:active {
-      transform: translateY(-50%) scale(0.9);
+      transform: translateY(-50%) scale(0.92);
     }
 
     .slider-arrow.prev {
-      left: 4px;
+      left: 10px;
     }
 
     .slider-arrow.next {
-      right: 4px;
+      right: 10px;
     }
 
     /* Dots indicator */
     .slider-dots {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      padding: 8px 0 4px 0;
+      gap: 10px;
+      padding: 15px 0 10px 0;
     }
 
     .slider-dot {
-      width: 8px;
-      height: 8px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.3);
       cursor: pointer;
@@ -313,71 +290,39 @@
       background: rgba(255, 255, 255, 0.6);
     }
 
-    /* Responsive */
+    /* Responsive - только убираем лишние отступы сверху */
     @media (max-width: 650px) {
       .slider-arrow {
-        width: 28px;
-        height: 28px;
-        font-size: 0.85rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1.4rem;
       }
       .slider-arrow.prev {
-        left: 2px;
+        left: 4px;
       }
       .slider-arrow.next {
-        right: 2px;
+        right: 4px;
       }
       .slider-slide {
-        min-height: 240px;
-        padding: 4px 6px;
+        min-height: 340px;
+        padding: 20px 15px;
       }
       .slide-video iframe {
-        height: 180px;
+        height: 200px;
       }
       .slide-video .video-description {
-        font-size: 0.75rem;
-        padding: 4px 8px;
+        font-size: 0.9rem;
+        padding: 12px 15px;
+        margin-top: 10px;
       }
       .slide-admins .admin-link {
-        min-width: 140px;
-        font-size: 0.75rem;
-        padding: 4px 10px;
+        min-width: 180px;
+        font-size: 0.9rem;
+        padding: 8px 16px;
       }
       .slide-admins .admin-link svg {
-        width: 14px;
-        height: 14px;
-      }
-      .slide-rules h2 {
-        font-size: 0.95rem;
-      }
-      .slide-rules ul li {
-        font-size: 0.75rem;
-        padding-left: 16px;
-        margin-bottom: 3px;
-      }
-      .slide-rules ul li:before {
-        font-size: 14px;
-      }
-      .slide-rules .rules-intro {
-        font-size: 0.75rem;
-      }
-      .slide-rules .rules-footer {
-        font-size: 0.75rem;
-      }
-      .slider-dots {
-        gap: 6px;
-        padding: 4px 0 2px 0;
-      }
-      .slider-dot {
-        width: 6px;
-        height: 6px;
-      }
-    }
-    @media (max-width: 400px) {
-      .slide-video iframe {
-        height: 150px;
-      }
-      .slider-slide {
-        min-height: 200px;
+        width: 18px;
+        height: 18px;
       }
     }
     /* --- END SLIDER STYLES --- */
@@ -388,17 +333,16 @@
       align-items: center;
       color: #00b2ff;
       text-decoration: none;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       font-weight: bold;
       opacity: 0;
       animation: slideInFromRight 0.6s forwards;
-      font-size: 0.9rem;
     }
     
     .admin-link-leh svg{
-      width: 18px;
-      height: 18px;
-      margin-right: 6px;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
       fill: #00b2ff;
     }
     
@@ -410,8 +354,8 @@
     a {
       align-items: center;
       font-weight: bold;
-      font-size: 1em;
-      padding: 8px 14px;
+      font-size: 1.1em;
+      padding: 10px 16px;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
       transition: background 0.3s ease;
@@ -429,7 +373,7 @@
       text-align: center;
       padding: 10px;
       color: black;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
     
     /* Modal styles for full-size gallery */
@@ -507,29 +451,29 @@
     
     /* Chat styles */
     .chat-container {
-      margin-top: 20px;
+      margin-top: 30px;
       background: rgba(0, 0, 0, 0.6);
       border-radius: 8px;
-      padding: 12px;
+      padding: 15px;
     }
     
     .chat-header {
       text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
     
     .chat-area {
-      height: 180px;
+      height: 200px;
       overflow-y: auto;
       background: rgba(255, 255, 255, 0.1);
-      padding: 8px;
+      padding: 10px;
       border-radius: 5px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     
     .message {
-      margin-bottom: 8px;
-      padding: 6px;
+      margin-bottom: 10px;
+      padding: 8px;
       border-radius: 5px;
       background: rgba(0, 0, 0, 0.3);
     }
@@ -537,41 +481,38 @@
     .chat-inputs {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
     
     .chat-inputs input {
-      padding: 6px;
+      padding: 8px;
       border-radius: 5px;
       border: 1px solid #444;
       background: rgba(255, 255, 255, 0.1);
       color: white;
-      font-size: 0.9rem;
     }
     
     .chat-buttons {
       display: flex;
-      gap: 6px;
-      margin-top: 6px;
+      gap: 8px;
+      margin-top: 10px;
     }
     
     .chat-buttons button {
       flex: 1;
-      padding: 6px;
+      padding: 8px;
       border-radius: 5px;
       border: none;
       background: #00b2ff;
       color: white;
       cursor: pointer;
       transition: background 0.3s;
-      font-size: 0.9rem;
     }
     
     .chat-buttons button:hover {
       background: #0099cc;
     }
 
-    /* --- Styles for Rules Modal --- */
     .rules-modal {
       display: none;
       position: fixed;
@@ -586,7 +527,7 @@
     .rules-modal-content {
       background: rgba(20, 20, 30, 0.95);
       margin: 5% auto;
-      padding: 20px;
+      padding: 30px;
       max-width: 800px;
       border-radius: 12px;
       color: #fff;
@@ -643,7 +584,7 @@
     @media (max-width: 600px) {
       .rules-modal-content {
         margin: 10% 5%;
-        padding: 15px;
+        padding: 20px;
       }
     }
   </style>
@@ -666,7 +607,7 @@
   </header>
   <main>
     <section>
-      <p style="font-size:0.9rem; margin:5px 0;">
+      <p>
         Добро пожаловать в наше сообщество русскоязычных путешественников "Кто в Лех, кто по дрова?", исследующих красоты Гималаев, Тибета и Ладака.
         Здесь мы делимся советами, фотографиями, впечатлениями и планируем совместные маршруты.
       </p>
@@ -718,24 +659,24 @@
           <h2>📜 Правила группы "Кто в Лех, кто по дрова?"</h2>
           <p class="rules-intro">
             Доброго времени суток всем путешественникам и участникам группы!<br>
-            Хотелось, чтобы мы в группе придерживались правил.
+            Хотелось, чтобы мы в группе придерживались правил. Если будут дополнения, корректировки, давайте обсудим.
           </p>
           <ul>
             <li><strong>По теме</strong> – обсуждаем только путешествия, маршруты, советы, транспорт, жильё и всё, что связано с Ладакхом.</li>
             <li><strong>Без флуда и спама</strong> – не засоряем чат нерелевантными сообщениями.</li>
             <li><strong>Уважение к участникам</strong> – не допускается хамство, оскорбления, национальная, религиозная и любая другая рознь.</li>
-            <li><strong>Реклама и коммерция</strong> – только по согласованию с администрацией.</li>
-            <li><strong>Полезная информация приветствуется</strong> – делитесь опытом, лайфхаками, контактами проверенных гидов.</li>
+            <li><strong>Реклама и коммерция</strong> – только по согласованию с администрацией. Без согласия – удаляется.</li>
+            <li><strong>Полезная информация приветствуется</strong> – делитесь опытом, лайфхаками, контактами проверенных гидов и т.д.</li>
             <li><strong>Вопросы по рекламе</strong> – пишите напрямую админам.</li>
           </ul>
           <p class="rules-footer">
-            🔔 Нарушение правил → предупреждение или бан.<br>
+            🔔 <strong>Нарушение правил может привести к предупреждению или бану без обсуждений.</strong><br>
             Приятного общения и ярких путешествий! 🏔️
           </p>
         </div>
       </div>
 
-      <!-- Стрелки навигации - ТОНКИЕ и КРУГЛЫЕ -->
+      <!-- Стрелки навигации - КРУГЛЫЕ -->
       <button class="slider-arrow prev" id="sliderPrev" aria-label="Предыдущий слайд">&#10094;</button>
       <button class="slider-arrow next" id="sliderNext" aria-label="Следующий слайд">&#10095;</button>
     </div>
@@ -766,18 +707,25 @@
   <div id="rulesModal" class="rules-modal">
     <div class="rules-modal-content">
       <span class="close-rules" onclick="closeRulesModal()">&times;</span>
-      <h2>📜 Правила группы "Кто в Лех, кто по дрова?"</h2>
-      <p>Доброго времени суток всем путешественникам и участникам группы!</p>
+      <h2>Правила группы "Кто в Лех, кто по дрова?"</h2>
+      <p>Доброго времени суток всем путешественникам и участникам группы!<br>
+      Хотелось, чтобы мы в группе придерживались правил. Если будут дополнения, корректировки, давайте обсудим.</p>
+      
+      <p><span class="emoji">🔹</span> <strong>Правила группы "Кто в Лех, кто по дрова?"</strong> <span class="emoji">🔹</span><br>
+      (Путешествия по Ладакху)</p>
+      
       <ul>
         <li><strong>По теме</strong> – обсуждаем только путешествия, маршруты, советы, транспорт, жильё и всё, что связано с Ладакхом.</li>
         <li><strong>Без флуда и спама</strong> – не засоряем чат нерелевантными сообщениями.</li>
         <li><strong>Уважение к участникам</strong> – не допускается хамство, оскорбления, национальная, религиозная и любая другая рознь.</li>
-        <li><strong>Реклама и коммерция</strong> – только по согласованию с администрацией.</li>
-        <li><strong>Полезная информация приветствуется</strong> – делитесь опытом, лайфхаками, контактами проверенных гидов.</li>
+        <li><strong>Реклама и коммерция</strong> – только по согласованию с администрацией. Без согласия – удаляется.</li>
+        <li><strong>Полезная информация приветствуется</strong> – делитесь опытом, лайфхаками, контактами проверенных гидов и т.д.</li>
         <li><strong>Вопросы по рекламе</strong> – пишите напрямую админам.</li>
       </ul>
-      <p>🔔 Нарушение правил может привести к предупреждению или бану без обсуждений.</p>
-      <p>Приятного общения и ярких путешествий! 🏔️</p>
+      
+      <p> <strong>Нарушение правил может привести к предупреждению или бану без обсуждений.</strong></p>
+      <p>Приятного общения и ярких путешествий! </p>
+      <p>Спасибо за внимание <span class="emoji">✨</span></p>
     </div>
   </div>
 
