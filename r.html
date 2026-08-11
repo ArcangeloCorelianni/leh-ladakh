@@ -315,7 +315,7 @@
       font-weight: bold;
     }
     .ladak-card a:hover {
-      text-decoration: underline;
+      text-decoration: none;
     }
     .ladak-card button {
       background: rgba(255, 255, 255, 0.1);
@@ -1033,10 +1033,10 @@
                 }
                 if (record.CONTACT && record.CONTACT.trim() !== '') {
                   const tel = record.CONTACT.replace(/[^0-9+]/g, '');
-                  html += `<div class="ladak-card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">`;
-                  html += `<a href="tel:${tel}" style="display:inline-flex;align-items:center;gap:6px;">📞 ${record.CONTACT}</a>`;
-                  html += `<a href="https://wa.me/${tel.replace(/^\+/, '')}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">💬 WhatsApp</a>`;
-                  html += `<a href="https://t.me/${record.CONTACT.replace(/[^0-9]/g, '')}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">✈️ Telegram</a>`;
+                  html += `<div class="ladak-card" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">`;
+                  html += `<a href="tel:${tel}" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">📞 ${record.CONTACT}</a>`;
+                  html += `<a href="https://wa.me/${tel.replace(/^\+/, '')}" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:1.2rem;">💬</a>`;
+                  html += `<a href="https://t.me/${record.CONTACT.replace(/[^0-9]/g, '')}" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:1.2rem;">✈️</a>`;
                   html += `</div>`;
                   hasRecordData = true;
                 }
