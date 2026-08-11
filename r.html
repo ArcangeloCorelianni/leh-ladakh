@@ -303,9 +303,12 @@
       border-radius: 6px;
       margin: 0;
       display: block;
+      cursor: pointer;
     }
     .ladak-card a {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       margin: 0;
       color: #00b2ff;
       text-decoration: none;
@@ -906,7 +909,6 @@
       document.getElementById('sliderWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Функция для перехода к слайду секции с прокруткой
     function goToSectionSlide(index, event) {
       if (event) event.preventDefault();
       goToSlide(index);
@@ -915,13 +917,11 @@
 
     // --- ОБНОВЛЕНИЕ ТОЧЕК ---
     function updateDots() {
-      // Удаляем старые точки (кроме первых трех)
       const existingDots = dotsContainer.querySelectorAll('.slider-dot');
       for (let i = 3; i < existingDots.length; i++) {
         existingDots[i].remove();
       }
       
-      // Добавляем новые точки
       const total = track.querySelectorAll('.slider-slide').length;
       for (let i = 3; i < total; i++) {
         const dot = document.createElement('button');
@@ -935,7 +935,6 @@
         dotsContainer.appendChild(dot);
       }
       
-      // Обновляем активную точку
       const allDots = dotsContainer.querySelectorAll('.slider-dot');
       allDots.forEach((dot, i) => {
         dot.classList.toggle('active', i === currentSlide);
@@ -948,7 +947,7 @@
       container.innerHTML = '';
       
       sections.forEach((section, index) => {
-        const slideIndex = index + 3; // Слайды начинаются с 3 (видео, админы, правила)
+        const slideIndex = index + 3;
         const btn = document.createElement('a');
         btn.href = '#';
         btn.className = 'admin-link-leh';
@@ -974,7 +973,6 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // Получаем названия секций из ПЕРВОЙ строки
           const sections = [];
           if (rows[0] && rows[0].c) {
             for (let col = 1; col < rows[0].c.length; col++) {
@@ -987,16 +985,12 @@
             }
           }
           
-          // Обновляем кнопки секций в header
           updateSectionButtons(sections);
           
-          // Удаляем старые слайды LADAK
           const oldSlides = track.querySelectorAll('.slide-ladak');
           oldSlides.forEach(slide => slide.remove());
           
-          // Для каждой секции создаем слайд
           sections.forEach((section) => {
-            // Собираем ВСЕ записи для этой секции
             const records = [];
             let currentRecord = {};
             let hasData = false;
@@ -1007,17 +1001,13 @@
                 const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
-                // Если поле NAME - это маркер начала новой записи
                 if (fieldName === 'NAME') {
-                  // Если уже есть запись с данными - сохраняем её
                   if (hasData && Object.keys(currentRecord).length > 0) {
                     records.push(currentRecord);
                   }
-                  // Начинаем новую запись
                   currentRecord = {};
                   hasData = false;
                   
-                  // Если NAME заполнено - добавляем
                   if (fieldValue && fieldValue.trim() !== '') {
                     currentRecord[fieldName] = fieldValue;
                     hasData = true;
@@ -1025,7 +1015,6 @@
                   continue;
                 }
                 
-                // Для остальных полей - добавляем в текущую запись
                 if (fieldName && fieldValue && fieldValue.trim() !== '') {
                   currentRecord[fieldName] = fieldValue;
                   hasData = true;
@@ -1033,12 +1022,10 @@
               }
             }
             
-            // Добавляем последнюю запись
             if (hasData && Object.keys(currentRecord).length > 0) {
               records.push(currentRecord);
             }
             
-            // Создаем слайд
             const slideDiv = document.createElement('div');
             slideDiv.className = 'slider-slide slide-ladak';
             
@@ -1048,7 +1035,6 @@
             if (records.length === 0) {
               html += `<p class="ladak-empty">Нет данных</p>`;
             } else {
-              // Показываем ВСЕ записи, каждая в отдельной группе
               records.forEach((record) => {
                 html += `<div class="ladak-record">`;
                 
@@ -1063,7 +1049,7 @@
                   hasRecordData = true;
                 }
                 if (record.FOTO && record.FOTO.trim() !== '') {
-                  html += `<div class="ladak-card"><img src="${record.FOTO}" alt="${record.NAME || ''}"></div>`;
+                  html += `<div class="ladak-card"><a href="${record.FOTO}" target="_blank"><img src="${record.FOTO}" alt="${record.NAME || ''}"></a></div>`;
                   hasRecordData = true;
                 }
                 if (record.LINK && record.LINK.trim() !== '') {
@@ -1071,7 +1057,9 @@
                   hasRecordData = true;
                 }
                 if (record.CONTACT && record.CONTACT.trim() !== '') {
-                  html += `<div class="ladak-card"><p>📞 ${record.CONTACT}</p></div>`;
+                  const tel = record.CONTACT.replace(/[^0-9+]/g, '');
+                  html += `<div class="ladak-card"><a href="tel:${tel}">📞 ${record.CONTACT}</a>`;
+                  html += ` <a href="https://wa.me/${tel.replace(/^\+/, '')}" target="_blank" style="margin-left:10px;">💬 WhatsApp</a></div>`;
                   hasRecordData = true;
                 }
                 if (record.DATE && record.DATE.trim() !== '') {
@@ -1083,7 +1071,14 @@
                   hasRecordData = true;
                 }
                 if (record.LOCATION && record.LOCATION.trim() !== '') {
-                  html += `<div class="ladak-card"><p>📍 ${record.LOCATION}</p></div>`;
+                  const coords = record.LOCATION.replace(/\s/g, '').split(',');
+                  if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                    const lat = coords[0].trim();
+                    const lng = coords[1].trim();
+                    html += `<div class="ladak-card"><a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 ${record.LOCATION}</a></div>`;
+                  } else {
+                    html += `<div class="ladak-card"><a href="https://www.google.com/maps?q=${encodeURIComponent(record.LOCATION)}" target="_blank">📍 ${record.LOCATION}</a></div>`;
+                  }
                   hasRecordData = true;
                 }
                 
@@ -1097,24 +1092,16 @@
             
             html += `</div>`;
             slideDiv.innerHTML = html;
-            
-            // Добавляем слайд в трек
             track.appendChild(slideDiv);
           });
           
-          // Обновляем количество слайдов
           totalSlides = track.querySelectorAll('.slider-slide').length;
-          
-          // Обновляем точки
           updateDots();
-          
-          // Возвращаем на первый слайд
           goToSlide(0);
           
         })
         .catch(error => {
           console.error('Ошибка загрузки:', error);
-          // Показываем сообщение об ошибке
           const errorSlide = document.createElement('div');
           errorSlide.className = 'slider-slide slide-ladak';
           errorSlide.innerHTML = `
@@ -1129,10 +1116,7 @@
 
     // --- ИНИЦИАЛИЗАЦИЯ ---
     window.addEventListener('load', () => {
-      // Загружаем данные из таблицы
       loadLadakData();
-      
-      // Настраиваем слайдер
       setTimeout(() => {
         track.style.transform = `translateX(0%)`;
       }, 100);
@@ -1142,7 +1126,6 @@
     prevBtn.addEventListener('click', prevSlide);
     nextBtn.addEventListener('click', nextSlide);
 
-    // Обработчики для первых трех точек
     document.querySelectorAll('.slider-dot[data-index="0"], .slider-dot[data-index="1"], .slider-dot[data-index="2"]').forEach(dot => {
       dot.addEventListener('click', function() {
         const index = parseInt(this.dataset.index);
@@ -1173,7 +1156,6 @@
     }, { passive: true });
 
     // --- ОСТАЛЬНЫЕ ФУНКЦИИ (галерея, чат, правила) ---
-    // Gallery modal functionality
     const modal = document.getElementById("galleryModal");
     const modalImg = document.getElementById("modalImg");
     const captionText = document.getElementById("caption");
@@ -1417,7 +1399,6 @@
       });
     }
 
-    // Инициализация чата
     document.addEventListener('DOMContentLoaded', function() {
       const savedUsername = localStorage.getItem('username');
       if (savedUsername) {
