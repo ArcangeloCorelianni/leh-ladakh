@@ -308,7 +308,7 @@
     .ladak-card a {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       margin: 0;
       color: #00b2ff;
       text-decoration: none;
@@ -316,6 +316,19 @@
     }
     .ladak-card a:hover {
       text-decoration: underline;
+    }
+    .ladak-card button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 4px 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.3s;
+    }
+    .ladak-card button:hover {
+      background: rgba(255, 255, 255, 0.2);
     }
     
     .ladak-empty {
@@ -915,6 +928,32 @@
       document.getElementById('sliderWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // --- ФУНКЦИЯ КОПИРОВАНИЯ ---
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Координаты скопированы: ' + text);
+      }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Координаты скопированы: ' + text);
+      });
+    }
+
+    // --- ФУНКЦИЯ ОТКРЫТИЯ ФОТО В МОДАЛЬНОМ ОКНЕ ---
+    function openModalImage(src, title) {
+      const modal = document.getElementById('galleryModal');
+      const modalImg = document.getElementById('modalImg');
+      const captionText = document.getElementById('caption');
+      modal.style.display = 'block';
+      modalImg.src = src;
+      captionText.innerHTML = title || 'Фото';
+      document.body.style.overflow = 'hidden';
+    }
+
     // --- ОБНОВЛЕНИЕ ТОЧЕК ---
     function updateDots() {
       const existingDots = dotsContainer.querySelectorAll('.slider-dot');
@@ -1049,7 +1088,7 @@
                   hasRecordData = true;
                 }
                 if (record.FOTO && record.FOTO.trim() !== '') {
-                  html += `<div class="ladak-card"><a href="${record.FOTO}" target="_blank"><img src="${record.FOTO}" alt="${record.NAME || ''}"></a></div>`;
+                  html += `<div class="ladak-card"><img src="${record.FOTO}" alt="${record.NAME || ''}" onclick="openModalImage('${record.FOTO}', '${record.NAME || ''}')" style="cursor:pointer;"></div>`;
                   hasRecordData = true;
                 }
                 if (record.LINK && record.LINK.trim() !== '') {
@@ -1058,8 +1097,11 @@
                 }
                 if (record.CONTACT && record.CONTACT.trim() !== '') {
                   const tel = record.CONTACT.replace(/[^0-9+]/g, '');
-                  html += `<div class="ladak-card"><a href="tel:${tel}">📞 ${record.CONTACT}</a>`;
-                  html += ` <a href="https://wa.me/${tel.replace(/^\+/, '')}" target="_blank" style="margin-left:10px;">💬 WhatsApp</a></div>`;
+                  html += `<div class="ladak-card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">`;
+                  html += `<a href="tel:${tel}" style="display:inline-flex;align-items:center;gap:6px;">📞 ${record.CONTACT}</a>`;
+                  html += `<a href="https://wa.me/${tel.replace(/^\+/, '')}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">💬 WhatsApp</a>`;
+                  html += `<a href="https://t.me/${record.CONTACT.replace(/[^0-9]/g, '')}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">✈️ Telegram</a>`;
+                  html += `</div>`;
                   hasRecordData = true;
                 }
                 if (record.DATE && record.DATE.trim() !== '') {
@@ -1072,13 +1114,17 @@
                 }
                 if (record.LOCATION && record.LOCATION.trim() !== '') {
                   const coords = record.LOCATION.replace(/\s/g, '').split(',');
+                  html += `<div class="ladak-card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">`;
                   if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
                     const lat = coords[0].trim();
                     const lng = coords[1].trim();
-                    html += `<div class="ladak-card"><a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 ${record.LOCATION}</a></div>`;
+                    html += `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">📍 ${record.LOCATION}</a>`;
+                    html += `<button onclick="copyToClipboard('${lat}, ${lng}')">📋 Копировать</button>`;
                   } else {
-                    html += `<div class="ladak-card"><a href="https://www.google.com/maps?q=${encodeURIComponent(record.LOCATION)}" target="_blank">📍 ${record.LOCATION}</a></div>`;
+                    html += `<a href="https://www.google.com/maps?q=${encodeURIComponent(record.LOCATION)}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">📍 ${record.LOCATION}</a>`;
+                    html += `<button onclick="copyToClipboard('${record.LOCATION}')">📋 Копировать</button>`;
                   }
+                  html += `</div>`;
                   hasRecordData = true;
                 }
                 
