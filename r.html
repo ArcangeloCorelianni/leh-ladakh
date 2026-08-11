@@ -585,7 +585,6 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
         Игра
       </a>
-      <!-- Динамические кнопки секций будут добавлены сюда -->
       <div id="sectionButtons"></div>
   </header>
   <main>
@@ -596,28 +595,19 @@
       </p>
     </section>
 
-    <!-- СЛАЙДЕР -->
     <div class="slider-wrapper" id="sliderWrapper">
-      <div class="slider-track" id="sliderTrack">
-        <!-- Сюда будут добавляться слайды из таблицы (динамически) -->
-      </div>
-
-      <!-- Стрелки навигации -->
-      <button class="slider-arrow prev" id="sliderPrev" aria-label="Предыдущий слайд">&#10094;</button>
-      <button class="slider-arrow next" id="sliderNext" aria-label="Следующий слайд">&#10095;</button>
+      <div class="slider-track" id="sliderTrack"></div>
+      <button class="slider-arrow prev" id="sliderPrev">&#10094;</button>
+      <button class="slider-arrow next" id="sliderNext">&#10095;</button>
     </div>
 
-    <!-- Индикаторы (точки) -->
-    <div class="slider-dots" id="sliderDots">
-      <!-- Точки для динамических секций будут добавлены скриптом -->
-    </div>
+    <div class="slider-dots" id="sliderDots"></div>
 
   </main>
   <footer>
     &copy; 2026 Кто в Лех, кто по дрова?
   </footer>
 
-  <!-- Modal for full-size gallery -->
   <div id="galleryModal" class="modal">
     <span class="close">&times;</span>
     <span class="prev">&#10094;</span>
@@ -700,7 +690,6 @@
       }
     }
 
-    // --- ФУНКЦИЯ КОПИРОВАНИЯ ---
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text).then(() => {
         alert('Координаты скопированы: ' + text);
@@ -715,7 +704,6 @@
       });
     }
 
-    // --- ФУНКЦИЯ ОТКРЫТИЯ ФОТО В МОДАЛЬНОМ ОКНЕ ---
     function openModalImage(src, title) {
       const modal = document.getElementById('galleryModal');
       const modalImg = document.getElementById('modalImg');
@@ -726,7 +714,6 @@
       document.body.style.overflow = 'hidden';
     }
 
-    // --- ОБНОВЛЕНИЕ ТОЧЕК ---
     function updateDots() {
       const existingDots = dotsContainer.querySelectorAll('.slider-dot');
       existingDots.forEach(dot => dot.remove());
@@ -754,7 +741,6 @@
       });
     }
 
-    // --- ОБНОВЛЕНИЕ КНОПОК СЕКЦИЙ В HEADER ---
     function updateSectionButtons(sections) {
       const container = document.getElementById('sectionButtons');
       container.innerHTML = '';
@@ -778,7 +764,6 @@
       });
     }
 
-    // --- ФУНКЦИЯ ДЛЯ СОЗДАНИЯ ОРИГИНАЛЬНЫХ ИКОНОК КОНТАКТОВ ---
     function createContactIcons(contactString) {
       if (!contactString) return '';
       
@@ -821,11 +806,10 @@
       return html;
     }
 
-    // --- ЗАГРУЗКА ДАННЫХ ИЗ ТАБЛИЦЫ LADAK ---
+    // --- ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ (ИСПРАВЛЕННАЯ) ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
       const sheetName = 'data';
-      
       const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
       
       fetch(url)
@@ -834,13 +818,14 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // Получаем секции из первой строки - только непустые названия
+          // --- 1. Собираем ТОЛЬКО непустые секции ---
           const sections = [];
           if (rows[0] && rows[0].c) {
             for (let col = 1; col < rows[0].c.length; col++) {
               const cell = rows[0].c[col];
               if (cell && cell.v) {
                 const name = cell.v.toString().trim();
+                // Ключевое исправление: пропускаем пустые названия
                 if (name && name.length > 0 && name !== 'undefined' && name !== '') {
                   sections.push({
                     name: name,
@@ -851,65 +836,86 @@
             }
           }
           
-          // Удаляем все старые слайды
+          // Удаляем старые слайды
           const oldSlides = track.querySelectorAll('.slider-slide');
           oldSlides.forEach(slide => slide.remove());
           
-          // Для каждой секции создаем слайд
+          // --- 2. Для каждой секции создаем слайд ---
           sections.forEach((section) => {
-            // Собираем все данные из этой секции в одну запись (если нет NAME)
-            const sectionData = {};
-            let hasAnyData = false;
-            
-            // Сначала проверим, есть ли записи с NAME
-            let hasNameRecords = false;
-            const namedRecords = [];
+            // Собираем все записи (элементы) для этой секции
+            const records = [];
             let currentRecord = {};
-            let hasCurrentData = false;
+            let hasData = false;
             
-            // Проходим по строкам для сбора записей с NAME
+            // Проходим по строкам данных
             for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
               const row = rows[rowIndex];
               if (row && row.c) {
-                const fieldName = row.c[0]?.v;
+                const fieldName = row.c[0]?.v; // NAME, TEXT, FOTO, etc.
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
+                // Если встретили NAME - начинаем новую запись
                 if (fieldName === 'NAME') {
-                  if (hasCurrentData && Object.keys(currentRecord).length > 0) {
-                    namedRecords.push({...currentRecord});
+                  // Сохраняем предыдущую запись
+                  if (hasData && Object.keys(currentRecord).length > 0) {
+                    records.push({...currentRecord});
                   }
+                  // Начинаем новую
                   currentRecord = {};
-                  hasCurrentData = false;
+                  hasData = false;
                   
                   if (fieldValue && fieldValue.toString().trim() !== '') {
                     currentRecord['NAME'] = fieldValue.toString().trim();
-                    hasCurrentData = true;
-                    hasNameRecords = true;
+                    hasData = true;
                   }
                   continue;
                 }
                 
+                // Добавляем остальные поля
                 if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
                   currentRecord[fieldName] = fieldValue.toString().trim();
-                  hasCurrentData = true;
+                  hasData = true;
                 }
               }
             }
             
-            if (hasCurrentData && Object.keys(currentRecord).length > 0) {
-              namedRecords.push({...currentRecord});
+            // Сохраняем последнюю запись
+            if (hasData && Object.keys(currentRecord).length > 0) {
+              records.push({...currentRecord});
             }
             
-            // Если есть записи с NAME - используем их
-            if (namedRecords.length > 0) {
-              // Создаем слайд с записями
-              const slideDiv = document.createElement('div');
-              slideDiv.className = 'slider-slide slide-ladak';
-              
-              let html = `<h2>${section.name}</h2>`;
-              html += `<div style="width:100%;max-width:700px;margin:0 auto;padding:5px 0;">`;
-              
-              namedRecords.forEach((record) => {
+            // Если записей нет, но данные есть - создаем одну запись со всеми полями
+            if (records.length === 0) {
+              // Проверяем, есть ли данные в секции
+              let hasAnyData = false;
+              const tempRecord = {};
+              for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+                const row = rows[rowIndex];
+                if (row && row.c) {
+                  const fieldName = row.c[0]?.v;
+                  const fieldValue = row.c[section.colIndex]?.v;
+                  if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
+                    tempRecord[fieldName] = fieldValue.toString().trim();
+                    hasAnyData = true;
+                  }
+                }
+              }
+              if (hasAnyData && Object.keys(tempRecord).length > 0) {
+                records.push(tempRecord);
+              }
+            }
+            
+            // --- Создаем HTML слайда ---
+            const slideDiv = document.createElement('div');
+            slideDiv.className = 'slider-slide slide-ladak';
+            
+            let html = `<h2>${section.name}</h2>`;
+            html += `<div style="width:100%;max-width:700px;margin:0 auto;padding:5px 0;">`;
+            
+            if (records.length === 0) {
+              html += `<p class="ladak-empty">Нет данных</p>`;
+            } else {
+              records.forEach((record) => {
                 html += `<div class="ladak-record">`;
                 
                 let hasRecordData = false;
@@ -967,88 +973,6 @@
                 
                 html += `</div>`;
               });
-              
-              html += `</div>`;
-              slideDiv.innerHTML = html;
-              track.appendChild(slideDiv);
-              return;
-            }
-            
-            // Если нет записей с NAME - собираем все данные в одну запись
-            for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
-              const row = rows[rowIndex];
-              if (row && row.c) {
-                const fieldName = row.c[0]?.v;
-                const fieldValue = row.c[section.colIndex]?.v;
-                if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
-                  sectionData[fieldName] = fieldValue.toString().trim();
-                  hasAnyData = true;
-                }
-              }
-            }
-            
-            // Создаем слайд
-            const slideDiv = document.createElement('div');
-            slideDiv.className = 'slider-slide slide-ladak';
-            
-            let html = `<h2>${section.name}</h2>`;
-            html += `<div style="width:100%;max-width:700px;margin:0 auto;padding:5px 0;">`;
-            
-            if (!hasAnyData || Object.keys(sectionData).length === 0) {
-              html += `<p class="ladak-empty">Нет данных</p>`;
-            } else {
-              html += `<div class="ladak-record">`;
-              
-              let hasRecordData = false;
-              
-              if (sectionData.TEXT && sectionData.TEXT.trim() !== '') {
-                const textWithBreaks = sectionData.TEXT.replace(/\n/g, '<br>');
-                html += `<div class="ladak-card"><p>${textWithBreaks}</p></div>`;
-                hasRecordData = true;
-              }
-              if (sectionData.FOTO && sectionData.FOTO.trim() !== '') {
-                html += `<div class="ladak-card"><img src="${sectionData.FOTO}" alt="${section.name}" onclick="openModalImage('${sectionData.FOTO}', '${section.name}')" style="cursor:pointer;max-width:100%;border-radius:6px;"></div>`;
-                hasRecordData = true;
-              }
-              if (sectionData.LINK && sectionData.LINK.trim() !== '') {
-                html += `<div class="ladak-card"><a href="${sectionData.LINK}" target="_blank">Подробнее →</a></div>`;
-                hasRecordData = true;
-              }
-              if (sectionData.CONTACT && sectionData.CONTACT.trim() !== '') {
-                html += `<div class="ladak-card" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;">`;
-                html += createContactIcons(sectionData.CONTACT);
-                html += `</div>`;
-                hasRecordData = true;
-              }
-              if (sectionData.DATE && sectionData.DATE.trim() !== '') {
-                html += `<div class="ladak-card"><p>📅 ${sectionData.DATE}</p></div>`;
-                hasRecordData = true;
-              }
-              if (sectionData.TIME && sectionData.TIME.trim() !== '') {
-                html += `<div class="ladak-card"><p>🕐 ${sectionData.TIME}</p></div>`;
-                hasRecordData = true;
-              }
-              if (sectionData.LOCATION && sectionData.LOCATION.trim() !== '') {
-                const coords = sectionData.LOCATION.replace(/\s/g, '').split(',');
-                html += `<div class="ladak-card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">`;
-                if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
-                  const lat = coords[0].trim();
-                  const lng = coords[1].trim();
-                  html += `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">📍 ${sectionData.LOCATION}</a>`;
-                  html += `<button onclick="copyToClipboard('${lat}, ${lng}')">📋 Копировать</button>`;
-                } else {
-                  html += `<a href="https://www.google.com/maps?q=${encodeURIComponent(sectionData.LOCATION)}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">📍 ${sectionData.LOCATION}</a>`;
-                  html += `<button onclick="copyToClipboard('${sectionData.LOCATION}')">📋 Копировать</button>`;
-                }
-                html += `</div>`;
-                hasRecordData = true;
-              }
-              
-              if (!hasRecordData) {
-                html += `<p class="ladak-empty">Нет данных для отображения</p>`;
-              }
-              
-              html += `</div>`;
             }
             
             html += `</div>`;
@@ -1056,14 +980,13 @@
             track.appendChild(slideDiv);
           });
           
-          // Обновляем счетчики и отображение
+          // Обновляем слайдер
           totalSlides = track.querySelectorAll('.slider-slide').length;
           if (totalSlides > 0) {
             updateDots();
             updateSectionButtons(sections);
             goToSlide(0);
           }
-          
         })
         .catch(error => {
           console.error('Ошибка загрузки:', error);
@@ -1087,7 +1010,6 @@
       }, 100);
     });
 
-    // --- УПРАВЛЕНИЕ СЛАЙДЕРОМ ---
     prevBtn.addEventListener('click', prevSlide);
     nextBtn.addEventListener('click', nextSlide);
 
