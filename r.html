@@ -306,6 +306,16 @@
       color: #aaa;
       padding: 20px 0;
     }
+    .ladak-record {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+    .ladak-record:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
 
     @keyframes slideInFromRight {
       0% {
@@ -948,17 +958,40 @@
           
           // Для каждой секции создаем ОТДЕЛЬНЫЙ слайд
           sections.forEach((section) => {
-            // Собираем поля
-            const fields = {};
+            // Собираем все записи для этой секции
+            const records = [];
+            let currentRecord = {};
+            let hasData = false;
+            
             for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
               const row = rows[rowIndex];
               if (row && row.c) {
                 const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
+                
+                // Если поле NAME и оно пустое - проверяем, есть ли другие поля
+                if (fieldName === 'NAME' && !fieldValue) {
+                  // Если в текущей записи есть данные - сохраняем её
+                  if (hasData) {
+                    records.push(currentRecord);
+                    currentRecord = {};
+                    hasData = false;
+                  }
+                  continue;
+                }
+                
                 if (fieldName) {
-                  fields[fieldName] = fieldValue;
+                  currentRecord[fieldName] = fieldValue;
+                  if (fieldValue && fieldValue.trim() !== '') {
+                    hasData = true;
+                  }
                 }
               }
+            }
+            
+            // Добавляем последнюю запись, если есть данные
+            if (hasData) {
+              records.push(currentRecord);
             }
             
             // Создаем слайд
@@ -968,43 +1001,54 @@
             let html = `<h2>${section.name}</h2>`;
             html += `<div style="width:100%;max-width:700px;margin:0 auto;padding:5px 0;">`;
             
-            let hasData = false;
-            
-            if (fields.NAME && fields.NAME.trim() !== '') {
-              html += `<div class="ladak-card"><h4>${fields.NAME}</h4></div>`;
-              hasData = true;
-            }
-            if (fields.TEXT && fields.TEXT.trim() !== '') {
-              html += `<div class="ladak-card"><p>${fields.TEXT}</p></div>`;
-              hasData = true;
-            }
-            if (fields.FOTO && fields.FOTO.trim() !== '') {
-              html += `<div class="ladak-card"><img src="${fields.FOTO}" alt="${fields.NAME || ''}"></div>`;
-              hasData = true;
-            }
-            if (fields.LINK && fields.LINK.trim() !== '') {
-              html += `<div class="ladak-card"><a href="${fields.LINK}" target="_blank">Подробнее →</a></div>`;
-              hasData = true;
-            }
-            if (fields.CONTACT && fields.CONTACT.trim() !== '') {
-              html += `<div class="ladak-card"><p>📞 ${fields.CONTACT}</p></div>`;
-              hasData = true;
-            }
-            if (fields.DATE && fields.DATE.trim() !== '') {
-              html += `<div class="ladak-card"><p>📅 ${fields.DATE}</p></div>`;
-              hasData = true;
-            }
-            if (fields.TIME && fields.TIME.trim() !== '') {
-              html += `<div class="ladak-card"><p>🕐 ${fields.TIME}</p></div>`;
-              hasData = true;
-            }
-            if (fields.LOCATION && fields.LOCATION.trim() !== '') {
-              html += `<div class="ladak-card"><p>📍 ${fields.LOCATION}</p></div>`;
-              hasData = true;
-            }
-            
-            if (!hasData) {
+            if (records.length === 0) {
               html += `<p class="ladak-empty">Нет данных</p>`;
+            } else {
+              // Показываем все записи
+              records.forEach((record, index) => {
+                html += `<div class="ladak-record">`;
+                
+                let hasRecordData = false;
+                
+                if (record.NAME && record.NAME.trim() !== '') {
+                  html += `<div class="ladak-card"><h4>${record.NAME}</h4></div>`;
+                  hasRecordData = true;
+                }
+                if (record.TEXT && record.TEXT.trim() !== '') {
+                  html += `<div class="ladak-card"><p>${record.TEXT}</p></div>`;
+                  hasRecordData = true;
+                }
+                if (record.FOTO && record.FOTO.trim() !== '') {
+                  html += `<div class="ladak-card"><img src="${record.FOTO}" alt="${record.NAME || ''}"></div>`;
+                  hasRecordData = true;
+                }
+                if (record.LINK && record.LINK.trim() !== '') {
+                  html += `<div class="ladak-card"><a href="${record.LINK}" target="_blank">Подробнее →</a></div>`;
+                  hasRecordData = true;
+                }
+                if (record.CONTACT && record.CONTACT.trim() !== '') {
+                  html += `<div class="ladak-card"><p>📞 ${record.CONTACT}</p></div>`;
+                  hasRecordData = true;
+                }
+                if (record.DATE && record.DATE.trim() !== '') {
+                  html += `<div class="ladak-card"><p>📅 ${record.DATE}</p></div>`;
+                  hasRecordData = true;
+                }
+                if (record.TIME && record.TIME.trim() !== '') {
+                  html += `<div class="ladak-card"><p>🕐 ${record.TIME}</p></div>`;
+                  hasRecordData = true;
+                }
+                if (record.LOCATION && record.LOCATION.trim() !== '') {
+                  html += `<div class="ladak-card"><p>📍 ${record.LOCATION}</p></div>`;
+                  hasRecordData = true;
+                }
+                
+                if (!hasRecordData) {
+                  html += `<p class="ladak-empty">Запись без данных</p>`;
+                }
+                
+                html += `</div>`;
+              });
             }
             
             html += `</div>`;
