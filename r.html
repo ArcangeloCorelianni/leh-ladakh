@@ -289,8 +289,10 @@
       margin: 20px 0;
       background: rgba(0, 0, 0, 0.3);
       height: auto !important;
-      min-height: 200px;
+      min-height: 150px;
       transition: height 0.5s ease;
+      display: flex;
+      align-items: center;
     }
 
     .slider-track {
@@ -298,7 +300,9 @@
       transition: transform 0.5s ease;
       will-change: transform;
       align-items: stretch;
-      height: 100%;
+      width: 100%;
+      height: auto !important;
+      min-height: 150px;
     }
 
     .slider-slide {
@@ -308,9 +312,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 20px 30px;
+      padding: 20px 30px 30px;
       height: auto !important;
-      min-height: 100%;
+      min-height: 150px;
       width: 100%;
       overflow: visible !important;
       text-align: center;
@@ -318,7 +322,7 @@
 
     .slide-ladak {
       padding-top: 5px;
-      padding-bottom: 5px;
+      padding-bottom: 10px;
       width: 100%;
       max-width: 100%;
       height: auto !important;
@@ -343,10 +347,12 @@
       background: rgba(0, 0, 0, 0.2);
       border-radius: 8px;
       padding: 15px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       border: 1px solid rgba(255, 255, 255, 0.25);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       text-align: left;
+      width: 100%;
+      box-sizing: border-box;
     }
     .ladak-record:last-child {
       margin-bottom: 0;
@@ -355,8 +361,10 @@
     .ladak-card {
       background: rgba(0, 0, 0, 0.15);
       border-radius: 6px;
-      padding: 12px 15px;
-      margin-bottom: 8px;
+      padding: 10px 15px;
+      margin-bottom: 6px;
+      width: 100%;
+      box-sizing: border-box;
     }
     .ladak-card:last-child {
       margin-bottom: 0;
@@ -467,6 +475,7 @@
       }
     }
 
+    /* --- СТРЕЛКИ НАВИГАЦИИ --- */
     .slider-arrow {
       position: absolute;
       top: 50%;
@@ -479,25 +488,24 @@
       justify-content: center;
       font-size: 1.4rem;
       font-weight: 100;
-      color: rgba(255, 255, 255, 0.3);
-      background: rgba(0, 0, 0, 0.15);
-      backdrop-filter: blur(2px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.4);
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       cursor: pointer;
       user-select: none;
       transition: all 0.3s ease;
       z-index: 10;
       padding: 0;
       line-height: 1;
-      box-shadow: none;
-      text-shadow: none;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
     .slider-arrow:hover {
-      color: rgba(255, 255, 255, 0.7);
-      background: rgba(0, 0, 0, 0.3);
-      border-color: rgba(255, 255, 255, 0.15);
-      transform: translateY(-50%) scale(1.08);
+      color: rgba(255, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-50%) scale(1.1);
     }
 
     .slider-arrow:active {
@@ -510,6 +518,16 @@
 
     .slider-arrow.next {
       right: 12px;
+    }
+
+    /* Увеличиваем зону нажатия для стрелок */
+    .slider-arrow::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
     }
 
     .slider-dots {
@@ -547,9 +565,21 @@
         padding-right: 15px !important;
       }
       .slider-arrow {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         font-size: 1rem;
+      }
+      .slider-arrow.prev {
+        left: 6px;
+      }
+      .slider-arrow.next {
+        right: 6px;
+      }
+      .slider-arrow::after {
+        top: -15px;
+        left: -15px;
+        right: -15px;
+        bottom: -15px;
       }
       .ladak-card {
         padding: 10px 12px;
@@ -933,7 +963,7 @@
 
   <script>
     // ============================================================
-    // 1. ОСНОВНАЯ ЛОГИКА СЛАЙДЕРА
+    // 1. СЛАЙДЕР С БЕСКОНЕЧНОЙ КАРУСЕЛЬЮ (АДАПТИВНАЯ ВЫСОТА)
     // ============================================================
     const track = document.getElementById('sliderTrack');
     const wrapper = document.getElementById('sliderWrapper');
@@ -945,78 +975,118 @@
     const nextBtn = document.getElementById('sliderNext');
     const dotsContainer = document.getElementById('sliderDots');
 
-    function adjustSliderHeight() {
+    // --- Установка высоты контейнера ---
+    function setWrapperHeight(index) {
       const slides = document.querySelectorAll('.slider-slide');
-      let maxHeight = 0;
-      
-      slides.forEach(slide => {
-        const originalDisplay = slide.style.display;
-        const originalPosition = slide.style.position;
-        const originalOpacity = slide.style.opacity;
-        const originalPointerEvents = slide.style.pointerEvents;
-        
-        slide.style.display = 'block';
-        slide.style.position = 'absolute';
-        slide.style.opacity = '0';
-        slide.style.pointerEvents = 'none';
-        slide.style.height = 'auto';
-        slide.style.minHeight = 'auto';
-        slide.style.overflow = 'visible';
-        
-        const height = slide.scrollHeight;
-        if (height > maxHeight) maxHeight = height;
-        
-        slide.style.display = originalDisplay;
-        slide.style.position = originalPosition;
-        slide.style.opacity = originalOpacity;
-        slide.style.pointerEvents = originalPointerEvents;
-        slide.style.height = '';
-        slide.style.minHeight = '';
-        slide.style.overflow = '';
-      });
-      
-      maxHeight += 80;
-      
-      if (maxHeight > 0) {
-        wrapper.style.height = maxHeight + 'px';
-        wrapper.style.minHeight = maxHeight + 'px';
-        wrapper.style.maxHeight = 'none';
+      if (slides.length === 0) {
+        wrapper.style.height = '150px';
+        wrapper.style.minHeight = '150px';
+        return;
       }
+      
+      // Находим реальный слайд (учитываем клоны)
+      let realIndex = index;
+      const totalReal = totalSlides;
+      if (realIndex === 0) realIndex = totalReal - 1;
+      else if (realIndex === totalReal + 1) realIndex = 0;
+      else realIndex = realIndex - 1;
+      
+      if (realIndex < 0 || realIndex >= totalReal) {
+        wrapper.style.height = '150px';
+        wrapper.style.minHeight = '150px';
+        return;
+      }
+      
+      const slide = slides[realIndex];
+      if (!slide) {
+        wrapper.style.height = '150px';
+        wrapper.style.minHeight = '150px';
+        return;
+      }
+      
+      // Получаем реальную высоту контента
+      const height = slide.scrollHeight;
+      const minHeight = 150;
+      
+      // Устанавливаем высоту с небольшим запасом
+      const finalHeight = Math.max(height + 40, minHeight);
+      wrapper.style.height = finalHeight + 'px';
+      wrapper.style.minHeight = finalHeight + 'px';
     }
 
+    // --- Обновление точек ---
+    function updateDots(index) {
+      const dots = dotsContainer.querySelectorAll('.slider-dot');
+      let realIndex = index;
+      const totalReal = totalSlides;
+      if (realIndex === 0) realIndex = totalReal - 1;
+      else if (realIndex === totalReal + 1) realIndex = 0;
+      else realIndex = realIndex - 1;
+      
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === realIndex);
+      });
+    }
+
+    // --- Переход к слайду ---
     function goToSlide(index) {
-      if (isTransitioning || index === currentSlide) return;
+      if (isTransitioning) return;
       if (totalSlides === 0) return;
-      if (index < 0) index = totalSlides - 1;
-      if (index >= totalSlides) index = 0;
+      
+      const totalWithClones = totalSlides + 2;
+      if (index < 0) index = totalWithClones - 1;
+      if (index >= totalWithClones) index = 0;
       
       isTransitioning = true;
       currentSlide = index;
+      track.style.transition = 'transform 0.5s ease';
       track.style.transform = `translateX(-${currentSlide * 100}%)`;
-      
-      const allDots = dotsContainer.querySelectorAll('.slider-dot');
-      allDots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === currentSlide);
-      });
+      updateDots(index);
+      setWrapperHeight(index);
       
       setTimeout(() => {
-        adjustSliderHeight();
         isTransitioning = false;
+        // Проверяем, не на клоне ли мы
+        if (currentSlide === 0) {
+          // На клоне последнего - переходим на реальный последний
+          track.style.transition = 'none';
+          currentSlide = totalSlides;
+          track.style.transform = `translateX(-${currentSlide * 100}%)`;
+          updateDots(currentSlide);
+          setWrapperHeight(currentSlide);
+          setTimeout(() => {
+            track.style.transition = 'transform 0.5s ease';
+          }, 50);
+        } else if (currentSlide === totalSlides + 1) {
+          // На клоне первого - переходим на реальный первый
+          track.style.transition = 'none';
+          currentSlide = 1;
+          track.style.transform = `translateX(-${currentSlide * 100}%)`;
+          updateDots(currentSlide);
+          setWrapperHeight(currentSlide);
+          setTimeout(() => {
+            track.style.transition = 'transform 0.5s ease';
+          }, 50);
+        }
       }, 550);
     }
 
     function nextSlide() {
-      if (totalSlides > 0) goToSlide(currentSlide + 1);
+      if (totalSlides > 0) {
+        goToSlide(currentSlide + 1);
+      }
     }
 
     function prevSlide() {
-      if (totalSlides > 0) goToSlide(currentSlide - 1);
+      if (totalSlides > 0) {
+        goToSlide(currentSlide - 1);
+      }
     }
 
     function goToSectionSlide(index, event) {
       if (event) event.preventDefault();
-      if (totalSlides > 0) {
-        goToSlide(index);
+      if (totalSlides > 0 && index >= 0 && index < totalSlides) {
+        goToSlide(index + 1);
         document.getElementById('sliderWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
@@ -1045,41 +1115,24 @@
       document.body.style.overflow = 'hidden';
     }
 
-    function updateDots() {
-      const existingDots = dotsContainer.querySelectorAll('.slider-dot');
-      existingDots.forEach(dot => dot.remove());
-      
-      const total = track.querySelectorAll('.slider-slide').length;
-      totalSlides = total;
-      
-      if (total === 0) return;
-      
-      for (let i = 0; i < total; i++) {
+    function createDots(count) {
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i < count; i++) {
         const dot = document.createElement('button');
         dot.className = 'slider-dot';
-        dot.dataset.index = i;
-        dot.setAttribute('aria-label', `Слайд ${i+1}`);
         dot.addEventListener('click', function() {
-          const index = parseInt(this.dataset.index);
-          goToSlide(index);
+          goToSectionSlide(i, null);
         });
         dotsContainer.appendChild(dot);
       }
-      
-      const allDots = dotsContainer.querySelectorAll('.slider-dot');
-      allDots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === currentSlide);
-      });
     }
 
     function updateSectionButtons(sections) {
       const container = document.getElementById('sectionButtons');
       container.innerHTML = '';
       
-      const allSlides = track.querySelectorAll('.slider-slide');
-      
       sections.forEach((section, index) => {
-        if (index < allSlides.length) {
+        if (index < sections.length) {
           const btn = document.createElement('a');
           btn.href = '#';
           btn.className = 'admin-link-leh';
@@ -1135,6 +1188,16 @@
       return html;
     }
 
+    // --- Функция для обновления высоты после загрузки изображений ---
+    function updateHeightAfterImages() {
+      setTimeout(() => {
+        if (currentSlide !== undefined) {
+          setWrapperHeight(currentSlide);
+        }
+      }, 300);
+    }
+
+    // --- Загрузка данных ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
       const sheetName = 'data';
@@ -1164,6 +1227,8 @@
           
           const oldSlides = track.querySelectorAll('.slider-slide');
           oldSlides.forEach(slide => slide.remove());
+          
+          const realSlides = [];
           
           sections.forEach((section) => {
             const records = [];
@@ -1285,15 +1350,47 @@
             
             html += `</div>`;
             slideDiv.innerHTML = html;
-            track.appendChild(slideDiv);
+            realSlides.push(slideDiv);
           });
           
-          totalSlides = track.querySelectorAll('.slider-slide').length;
+          // Добавляем клоны
+          if (realSlides.length > 0) {
+            // Клон последнего в начало
+            const lastClone = realSlides[realSlides.length - 1].cloneNode(true);
+            lastClone.classList.add('slide-clone');
+            track.appendChild(lastClone);
+            
+            // Реальные слайды
+            realSlides.forEach(slide => track.appendChild(slide));
+            
+            // Клон первого в конец
+            const firstClone = realSlides[0].cloneNode(true);
+            firstClone.classList.add('slide-clone');
+            track.appendChild(firstClone);
+          }
+          
+          totalSlides = realSlides.length;
+          
           if (totalSlides > 0) {
-            updateDots();
+            createDots(totalSlides);
             updateSectionButtons(sections);
-            goToSlide(0);
-            setTimeout(adjustSliderHeight, 500);
+            
+            // Начинаем с первого реального слайда (индекс 1)
+            currentSlide = 1;
+            track.style.transition = 'none';
+            track.style.transform = `translateX(-100%)`;
+            updateDots(1);
+            
+            // Устанавливаем высоту с задержкой
+            setTimeout(() => {
+              track.style.transition = 'transform 0.5s ease';
+              setWrapperHeight(1);
+              
+              // Дополнительная корректировка после загрузки изображений
+              setTimeout(() => {
+                setWrapperHeight(1);
+              }, 500);
+            }, 100);
           }
         })
         .catch(error => {
@@ -1305,26 +1402,56 @@
             <p class="ladak-empty">⚠️ Не удалось загрузить данные. Проверьте подключение к интернету.</p>
           `;
           track.appendChild(errorSlide);
-          totalSlides = track.querySelectorAll('.slider-slide').length;
-          updateDots();
-          setTimeout(adjustSliderHeight, 500);
+          totalSlides = 1;
+          createDots(1);
+          setTimeout(() => {
+            setWrapperHeight(0);
+          }, 300);
         });
     }
 
-    // --- ИНИЦИАЛИЗАЦИЯ СЛАЙДЕРА ---
+    // --- Отслеживание загрузки изображений для обновления высоты ---
+    function setupImageLoadObserver() {
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach(function(node) {
+              if (node.tagName === 'IMG') {
+                node.addEventListener('load', function() {
+                  updateHeightAfterImages();
+                });
+                node.addEventListener('error', function() {
+                  updateHeightAfterImages();
+                });
+              }
+            });
+          }
+        });
+      });
+      
+      observer.observe(document.getElementById('sliderTrack'), {
+        childList: true,
+        subtree: true
+      });
+    }
+
+    // --- ИНИЦИАЛИЗАЦИЯ ---
     window.addEventListener('load', () => {
       loadLadakData();
-      setTimeout(() => {
-        track.style.transform = `translateX(0%)`;
-      }, 100);
+      setupImageLoadObserver();
       
       let resizeTimer;
       window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(adjustSliderHeight, 200);
+        resizeTimer = setTimeout(() => {
+          if (currentSlide !== undefined) {
+            setWrapperHeight(currentSlide);
+          }
+        }, 300);
       });
     });
 
+    // --- Кнопки навигации ---
     prevBtn.addEventListener('click', prevSlide);
     nextBtn.addEventListener('click', nextSlide);
 
@@ -1373,7 +1500,6 @@
       }
     });
 
-    // --- Отправка формы ---
     addForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -1404,10 +1530,9 @@
       errorMsg.classList.remove('show');
 
       try {
-        // ЗАМЕНИТЕ НА ВАШ URL
-        const scriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwx2o-28ClRqVmno9gxv1i92LGXHHolu8ZE-YbCclDxMktoxk05zqFo4Uj5dWyKvyxt/exec';
         
-        const response = await fetch(scriptURL, {
+        await fetch(scriptURL, {
           method: 'POST',
           mode: 'no-cors',
           headers: {
@@ -1416,6 +1541,7 @@
           body: JSON.stringify(data)
         });
 
+        successMsg.textContent = 'Запись успешно добавлена!';
         successMsg.classList.add('show');
         errorMsg.classList.remove('show');
         addForm.reset();
