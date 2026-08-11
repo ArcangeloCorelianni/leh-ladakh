@@ -81,17 +81,17 @@
       border-radius: 8px;
       margin: 20px 0;
       background: rgba(0, 0, 0, 0.3);
-      height: auto;
-      min-height: 100px;
+      height: 500px;
+      min-height: 400px;
+      transition: height 0.3s ease;
     }
 
     .slider-track {
       display: flex;
       transition: transform 0.5s ease;
       will-change: transform;
-      align-items: stretch;
-      justify-content: center;
-      height: auto;
+      align-items: flex-start;
+      height: 100%;
     }
 
     .slider-slide {
@@ -102,15 +102,19 @@
       align-items: center;
       justify-content: flex-start;
       padding: 20px 30px;
-      min-height: auto;
-      height: auto;
+      height: 100%;
       width: 100%;
-      margin: 0 auto;
+      overflow-y: auto;
       text-align: center;
     }
-    .slider-slide > * {
-      width: 100%;
-      max-width: 100%;
+
+    .slider-slide::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .slider-slide::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
     }
 
     /* Slide: LADAK Data */
@@ -119,7 +123,7 @@
       padding-bottom: 5px;
       width: 100%;
       max-width: 100%;
-      height: auto;
+      height: 100%;
       min-height: auto;
     }
     .slide-ladak h2 {
@@ -816,24 +820,11 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // --- 1. Находим первую непустую колонку и собираем секции ---
+          // --- 1. Находим все непустые секции в ПЕРВОЙ СТРОКЕ (начиная с 0-го столбца) ---
           const sections = [];
           if (rows[0] && rows[0].c) {
-            let startCol = 1;
-            // Находим первую колонку с названием секции
-            for (let col = 1; col < rows[0].c.length; col++) {
-              const cell = rows[0].c[col];
-              if (cell && cell.v) {
-                const name = cell.v.toString().trim();
-                if (name && name.length > 0 && name !== 'undefined' && name !== '') {
-                  startCol = col;
-                  break;
-                }
-              }
-            }
-            
-            // Собираем все непустые секции начиная с startCol
-            for (let col = startCol; col < rows[0].c.length; col++) {
+            // Начинаем с самого ПЕРВОГО столбца (индекс 0)
+            for (let col = 0; col < rows[0].c.length; col++) {
               const cell = rows[0].c[col];
               if (cell && cell.v) {
                 const name = cell.v.toString().trim();
@@ -864,18 +855,23 @@
                 const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
+                // Если это NAME — начинаем новую запись
                 if (fieldName === 'NAME') {
+                  // Сохраняем предыдущую запись, если она есть
                   if (hasData && Object.keys(currentRecord).length > 0) {
                     records.push({...currentRecord});
                   }
                   currentRecord = {};
                   hasData = false;
+                  
                   if (fieldValue && fieldValue.toString().trim() !== '') {
                     currentRecord['NAME'] = fieldValue.toString().trim();
                     hasData = true;
                   }
                   continue;
                 }
+                
+                // Если это другие поля — добавляем к текущей записи
                 if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
                   currentRecord[fieldName] = fieldValue.toString().trim();
                   hasData = true;
@@ -883,6 +879,7 @@
               }
             }
             
+            // Сохраняем последнюю запись
             if (hasData && Object.keys(currentRecord).length > 0) {
               records.push({...currentRecord});
             }
