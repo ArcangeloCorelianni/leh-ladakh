@@ -656,7 +656,7 @@
   <script>
     // --- ОСНОВНАЯ ЛОГИКА СЛАЙДЕРА ---
     const track = document.getElementById('sliderTrack');
-    let totalSlides = track.querySelectorAll('.slider-slide').length;
+    let totalSlides = 0;
     let currentSlide = 0;
     let isTransitioning = false;
 
@@ -666,6 +666,7 @@
 
     function goToSlide(index) {
       if (isTransitioning || index === currentSlide) return;
+      if (totalSlides === 0) return;
       if (index < 0) index = totalSlides - 1;
       if (index >= totalSlides) index = 0;
       
@@ -684,17 +685,19 @@
     }
 
     function nextSlide() {
-      goToSlide(currentSlide + 1);
+      if (totalSlides > 0) goToSlide(currentSlide + 1);
     }
 
     function prevSlide() {
-      goToSlide(currentSlide - 1);
+      if (totalSlides > 0) goToSlide(currentSlide - 1);
     }
 
     function goToSectionSlide(index, event) {
       if (event) event.preventDefault();
-      goToSlide(index);
-      document.getElementById('sliderWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (totalSlides > 0) {
+        goToSlide(index);
+        document.getElementById('sliderWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     // --- ФУНКЦИЯ КОПИРОВАНИЯ ---
@@ -729,6 +732,10 @@
       existingDots.forEach(dot => dot.remove());
       
       const total = track.querySelectorAll('.slider-slide').length;
+      totalSlides = total;
+      
+      if (total === 0) return;
+      
       for (let i = 0; i < total; i++) {
         const dot = document.createElement('button');
         dot.className = 'slider-dot';
@@ -827,24 +834,27 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // Получаем секции из первой строки (игнорируем пустые)
+          // Получаем секции из первой строки
           const sections = [];
           if (rows[0] && rows[0].c) {
+            let prevWasEmpty = false;
             for (let col = 1; col < rows[0].c.length; col++) {
               const cell = rows[0].c[col];
               if (cell && cell.v) {
                 const name = cell.v.toString().trim();
-                if (name && name.length > 0 && name !== 'undefined') {
+                if (name && name.length > 0 && name !== 'undefined' && name !== '') {
+                  // Пропускаем пустые названия секций
                   sections.push({
                     name: name,
                     colIndex: col
                   });
+                  prevWasEmpty = false;
+                } else {
+                  prevWasEmpty = true;
                 }
               }
             }
           }
-          
-          const sectionsData = sections;
           
           // Удаляем все старые слайды
           const oldSlides = track.querySelectorAll('.slider-slide');
@@ -870,33 +880,20 @@
               }
             }
             
-            // Если данных нет - создаем слайд с сообщением
-            if (!sectionHasData) {
-              const slideDiv = document.createElement('div');
-              slideDiv.className = 'slider-slide slide-ladak';
-              slideDiv.innerHTML = `<h2>${section.name}</h2><div style="width:100%;max-width:700px;margin:0 auto;padding:5px 0;"><p class="ladak-empty">Нет данных</p></div>`;
-              track.appendChild(slideDiv);
-              return;
-            }
-            
-            // Проходим по строкам, начиная с 1 (пропускаем заголовок)
+            // Проходим по строкам для сбора записей
             for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
               const row = rows[rowIndex];
               if (row && row.c) {
-                const fieldName = row.c[0]?.v; // Поле NAME - первый столбец
+                const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
-                // Если встретили поле NAME (первый столбец)
                 if (fieldName === 'NAME') {
-                  // Сохраняем предыдущую запись, если она есть
                   if (hasData && Object.keys(currentRecord).length > 0) {
                     records.push({...currentRecord});
                   }
-                  // Начинаем новую запись
                   currentRecord = {};
                   hasData = false;
                   
-                  // Если NAME не пустой - добавляем
                   if (fieldValue && fieldValue.toString().trim() !== '') {
                     currentRecord['NAME'] = fieldValue.toString().trim();
                     hasData = true;
@@ -904,7 +901,6 @@
                   continue;
                 }
                 
-                // Для всех остальных полей - добавляем в текущую запись
                 if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
                   currentRecord[fieldName] = fieldValue.toString().trim();
                   hasData = true;
@@ -912,12 +908,11 @@
               }
             }
             
-            // Добавляем последнюю запись, если есть данные
             if (hasData && Object.keys(currentRecord).length > 0) {
               records.push({...currentRecord});
             }
             
-            // Если записей с NAME нет, но данные есть - создаем одну запись со всеми данными
+            // Если записей с NAME нет, но данные есть - создаем одну запись
             if (records.length === 0 && sectionHasData) {
               const tempRecord = {};
               for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
@@ -955,7 +950,6 @@
                   hasRecordData = true;
                 }
                 if (record.TEXT && record.TEXT.trim() !== '') {
-                  // Заменяем переносы строк на <br>
                   const textWithBreaks = record.TEXT.replace(/\n/g, '<br>');
                   html += `<div class="ladak-card"><p>${textWithBreaks}</p></div>`;
                   hasRecordData = true;
@@ -1011,10 +1005,13 @@
             track.appendChild(slideDiv);
           });
           
+          // Обновляем счетчики и отображение
           totalSlides = track.querySelectorAll('.slider-slide').length;
-          updateDots();
-          updateSectionButtons(sectionsData);
-          goToSlide(0);
+          if (totalSlides > 0) {
+            updateDots();
+            updateSectionButtons(sections);
+            goToSlide(0);
+          }
           
         })
         .catch(error => {
