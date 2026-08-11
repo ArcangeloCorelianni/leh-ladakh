@@ -273,7 +273,7 @@
       border-radius: 8px;
       padding: 15px;
       margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
     .ladak-record:last-child {
@@ -728,6 +728,8 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
         Правила группы
       </a>
+      <!-- Динамические кнопки секций будут добавлены сюда -->
+      <div id="sectionButtons"></div>
   </header>
   <main>
     <section>
@@ -933,6 +935,25 @@
       });
     }
 
+    // --- ОБНОВЛЕНИЕ КНОПОК СЕКЦИЙ В HEADER ---
+    function updateSectionButtons(sections) {
+      const container = document.getElementById('sectionButtons');
+      container.innerHTML = '';
+      
+      sections.forEach((section, index) => {
+        const slideIndex = index + 3; // Слайды начинаются с 3 (видео, админы, правила)
+        const btn = document.createElement('a');
+        btn.href = '#';
+        btn.className = 'admin-link-leh';
+        btn.setAttribute('onclick', `goToSlide(${slideIndex}); return false;`);
+        btn.innerHTML = `
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
+          ${section.name}
+        `;
+        container.appendChild(btn);
+      });
+    }
+
     // --- ЗАГРУЗКА ДАННЫХ ИЗ ТАБЛИЦЫ LADAK ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
@@ -958,6 +979,9 @@
               }
             }
           }
+          
+          // Обновляем кнопки секций в header
+          updateSectionButtons(sections);
           
           // Удаляем старые слайды LADAK
           const oldSlides = track.querySelectorAll('.slide-ladak');
