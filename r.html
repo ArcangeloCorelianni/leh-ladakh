@@ -814,6 +814,16 @@
       return html;
     }
 
+    // --- ФУНКЦИЯ ПРОВЕРКИ НАЛИЧИЯ ДАННЫХ В ЗАПИСИ ---
+    function hasAnyData(record) {
+      for (const key in record) {
+        if (key !== 'NAME' && record[key] && record[key].trim() !== '') {
+          return true;
+        }
+      }
+      return false;
+    }
+
     // --- ЗАГРУЗКА ДАННЫХ ИЗ ТАБЛИЦЫ LADAK ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
@@ -834,7 +844,6 @@
               const cell = rows[0].c[col];
               if (cell && cell.v) {
                 const name = cell.v.toString().trim();
-                // Игнорируем пустые названия
                 if (name && name.length > 0 && name !== 'undefined') {
                   sections.push({
                     name: name,
@@ -877,13 +886,17 @@
                 const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
+                // Если поле NAME - маркер начала новой записи
                 if (fieldName === 'NAME') {
-                  if (hasData && Object.keys(currentRecord).length > 0) {
+                  // Сохраняем предыдущую запись, если в ней есть данные
+                  if (hasData && Object.keys(currentRecord).length > 0 && hasAnyData(currentRecord)) {
                     records.push(currentRecord);
                   }
+                  // Начинаем новую запись
                   currentRecord = {};
                   hasData = false;
                   
+                  // Если NAME заполнено - добавляем
                   if (fieldValue && fieldValue.trim() !== '') {
                     currentRecord[fieldName] = fieldValue;
                     hasData = true;
@@ -891,6 +904,7 @@
                   continue;
                 }
                 
+                // Для остальных полей - добавляем в текущую запись
                 if (fieldName && fieldValue && fieldValue.trim() !== '') {
                   currentRecord[fieldName] = fieldValue;
                   hasData = true;
@@ -898,7 +912,8 @@
               }
             }
             
-            if (hasData && Object.keys(currentRecord).length > 0) {
+            // Добавляем последнюю запись
+            if (hasData && Object.keys(currentRecord).length > 0 && hasAnyData(currentRecord)) {
               records.push(currentRecord);
             }
             
