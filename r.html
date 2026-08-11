@@ -588,70 +588,6 @@
     .prev:hover, .next:hover {
       background-color: rgba(0, 0, 0, 0.8);
     }
-    
-    /* Chat styles */
-    .chat-container {
-      margin-top: 30px;
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 8px;
-      padding: 15px;
-    }
-    
-    .chat-header {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    
-    .chat-area {
-      height: 200px;
-      overflow-y: auto;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 10px;
-    }
-    
-    .message {
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 5px;
-      background: rgba(0, 0, 0, 0.3);
-    }
-    
-    .chat-inputs {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .chat-inputs input {
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #444;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-    
-    .chat-buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    
-    .chat-buttons button {
-      flex: 1;
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-      background: #00b2ff;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    .chat-buttons button:hover {
-      background: #0099cc;
-    }
 
     .rules-modal {
       display: none;
@@ -1201,7 +1137,7 @@
       }
     }, { passive: true });
 
-    // --- ОСТАЛЬНЫЕ ФУНКЦИИ (галерея, чат, правила) ---
+    // --- ГАЛЕРЕЯ (модальное окно) ---
     const modal = document.getElementById("galleryModal");
     const modalImg = document.getElementById("modalImg");
     const captionText = document.getElementById("caption");
@@ -1275,6 +1211,7 @@
       }
     });
 
+    // --- ПРАВИЛА (модальное окно) ---
     function openRulesModal(e) {
       if (e) e.preventDefault();
       document.getElementById('rulesModal').style.display = "block";
@@ -1292,174 +1229,6 @@
         closeRulesModal();
       }
     }
-
-    // Chat functionality
-    let pageSize = 100;
-    let currentPage = 1;
-    let data_messages = []; 
-    let secret_key_server = '123';
-
-    function simpleEncrypt(data, key) {
-      let encryptedData = '';
-      let j = 0;
-      for (let i = 0; i < data.length; i++) {
-        let randomChar = String.fromCharCode(Math.floor(Math.random() * 94) + 32); 
-        if (j >= key.length) {j=0;}
-        if (randomChar === '*') {
-          randomChar = '$';
-        }
-        encryptedData += randomChar;
-        let unicodeCurrentChar = data[i].charCodeAt(0);
-        let unicodeCurrentKeyChar = key[j].charCodeAt(0);
-        let encryptedChar = String.fromCharCode(unicodeCurrentKeyChar + unicodeCurrentChar);
-        encryptedData += encryptedChar;
-        j++;
-      }
-      return encryptedData;
-    }
-
-    function simpleDecrypt(data, key) {
-      let decryptedData = '';
-      let j = 0;
-      for (let i = 0; i < data.length; i++) {
-        if (j >= key.length) {
-          j = 0;
-        }
-        if (i % 2 === 0) {
-          continue;
-        }
-        let unicodeCurrentChar = data.charCodeAt(i);
-        let unicodeCurrentKeyChar = key[j].charCodeAt(0);
-        let decryptedChar = String.fromCharCode(unicodeCurrentChar - unicodeCurrentKeyChar);
-        decryptedData += decryptedChar;
-        j++;
-      }
-      return decryptedData;
-    }
-
-    function stringToColor(str) {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      const color = (hash & 0x00FFFFFF)
-        .toString(16)
-        .toUpperCase()
-        .padStart(6, '0');
-      return `#${color}`;
-    }
-
-    function fetchMessages() {
-      const url = `https://focusedbadge-us.backendless.app/api/data/messy_buggy?pageSize=${pageSize}&page=${currentPage}`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'application-id': '99451B96-0AE0-4556-A88D-84D2500E2AC5',
-        'api-key': 'E502729E-2312-47D4-9AF5-9084CDEAB1C7'
-      };
-
-      fetch(url, { method: 'GET', headers: headers })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to fetch data: ' + response.statusText);
-          }
-          return response.json();
-        })
-        .then(data => {
-          data_messages = data;
-          const chatArea = document.getElementById('chat-area');
-          if (!chatArea) return;
-          chatArea.innerHTML = "";
-          data.sort((a, b) => new Date(b.created) - new Date(a.created));
-          data.forEach(record => {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
-            const userColor = stringToColor(record.user);
-            messageElement.style.backgroundColor = userColor;
-            const decryptedMessage = simpleDecrypt(record.message, '123');
-            messageElement.innerHTML = `
-              <p><strong>${record.user}</strong>: ${decryptedMessage}</p>
-              <small>Sent at: ${record.time_date_stamp}</small>
-              <hr>`;
-            chatArea.appendChild(messageElement);
-          });
-          if (data.length === pageSize) {
-            currentPage++;
-          }
-        })
-        .catch(error => {
-          console.error("Error:", error);
-        });
-    }
-
-    function sendAndsaveMessage() {
-      const field_message = document.getElementById('message-input')?.value;
-      const field_username = document.getElementById('user-name-input')?.value;
-
-      if (!field_message || field_message.trim() === "") {
-        console.error("Message cannot be empty.");
-        return;
-      }
-      if (!field_username || field_username.trim() === "") {
-        console.error("Username cannot be empty.");
-        return;
-      }
-
-      localStorage.setItem('username', field_username);
-
-      const encrypted_field_message = simpleEncrypt(field_message, secret_key_server);
-
-      const dataToUpdate = {
-        message: encrypted_field_message,
-        user: field_username,
-        time_date_stamp: new Date().toISOString()
-      };
-
-      const url = "https://focusedbadge-us.backendless.app/api/data/messy_buggy";
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'application-id': '99451B96-0AE0-4556-A88D-84D2500E2AC5',
-        'api-key': 'E502729E-2312-47D4-9AF5-9084CDEAB1C7'
-      };
-
-      fetch(url, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(dataToUpdate)
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to update data: ' + response.statusText);
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log("Response Data:", data);
-        const messageInput = document.getElementById('message-input');
-        if (messageInput) messageInput.value = "";
-        fetchMessages();
-      })
-      .catch(error => {
-        console.error("Error:", error);
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const savedUsername = localStorage.getItem('username');
-      if (savedUsername) {
-        const userNameInput = document.getElementById('user-name-input');
-        if (userNameInput) userNameInput.value = savedUsername;
-      }
-      
-      const sendBtn = document.getElementById('send-btn');
-      const refreshBtn = document.getElementById('refresh-btn');
-      if (sendBtn) sendBtn.addEventListener('click', sendAndsaveMessage);
-      if (refreshBtn) refreshBtn.addEventListener('click', fetchMessages);
-      
-      fetchMessages();
-      setInterval(fetchMessages, 25000);
-    });
   </script>
 </body>
 </html>
