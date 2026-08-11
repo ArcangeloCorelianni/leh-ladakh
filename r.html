@@ -834,23 +834,18 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // Получаем секции из первой строки
+          // Получаем секции из первой строки - только непустые названия
           const sections = [];
           if (rows[0] && rows[0].c) {
-            let prevWasEmpty = false;
             for (let col = 1; col < rows[0].c.length; col++) {
               const cell = rows[0].c[col];
               if (cell && cell.v) {
                 const name = cell.v.toString().trim();
                 if (name && name.length > 0 && name !== 'undefined' && name !== '') {
-                  // Пропускаем пустые названия секций
                   sections.push({
                     name: name,
                     colIndex: col
                   });
-                  prevWasEmpty = false;
-                } else {
-                  prevWasEmpty = true;
                 }
               }
             }
@@ -862,25 +857,17 @@
           
           // Для каждой секции создаем слайд
           sections.forEach((section) => {
-            // Собираем записи для этой секции
-            const records = [];
+            // Собираем все данные из этой секции в одну запись (если нет NAME)
+            const sectionData = {};
+            let hasAnyData = false;
+            
+            // Сначала проверим, есть ли записи с NAME
+            let hasNameRecords = false;
+            const namedRecords = [];
             let currentRecord = {};
-            let hasData = false;
+            let hasCurrentData = false;
             
-            // Сначала проверим, есть ли в секции данные
-            let sectionHasData = false;
-            for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
-              const row = rows[rowIndex];
-              if (row && row.c) {
-                const fieldValue = row.c[section.colIndex]?.v;
-                if (fieldValue && fieldValue.toString().trim() !== '') {
-                  sectionHasData = true;
-                  break;
-                }
-              }
-            }
-            
-            // Проходим по строкам для сбора записей
+            // Проходим по строкам для сбора записей с NAME
             for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
               const row = rows[rowIndex];
               if (row && row.c) {
@@ -888,59 +875,41 @@
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
                 if (fieldName === 'NAME') {
-                  if (hasData && Object.keys(currentRecord).length > 0) {
-                    records.push({...currentRecord});
+                  if (hasCurrentData && Object.keys(currentRecord).length > 0) {
+                    namedRecords.push({...currentRecord});
                   }
                   currentRecord = {};
-                  hasData = false;
+                  hasCurrentData = false;
                   
                   if (fieldValue && fieldValue.toString().trim() !== '') {
                     currentRecord['NAME'] = fieldValue.toString().trim();
-                    hasData = true;
+                    hasCurrentData = true;
+                    hasNameRecords = true;
                   }
                   continue;
                 }
                 
                 if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
                   currentRecord[fieldName] = fieldValue.toString().trim();
-                  hasData = true;
+                  hasCurrentData = true;
                 }
               }
             }
             
-            if (hasData && Object.keys(currentRecord).length > 0) {
-              records.push({...currentRecord});
+            if (hasCurrentData && Object.keys(currentRecord).length > 0) {
+              namedRecords.push({...currentRecord});
             }
             
-            // Если записей с NAME нет, но данные есть - создаем одну запись
-            if (records.length === 0 && sectionHasData) {
-              const tempRecord = {};
-              for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
-                const row = rows[rowIndex];
-                if (row && row.c) {
-                  const fieldName = row.c[0]?.v;
-                  const fieldValue = row.c[section.colIndex]?.v;
-                  if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
-                    tempRecord[fieldName] = fieldValue.toString().trim();
-                  }
-                }
-              }
-              if (Object.keys(tempRecord).length > 0) {
-                records.push(tempRecord);
-              }
-            }
-            
-            // Создаем слайд
-            const slideDiv = document.createElement('div');
-            slideDiv.className = 'slider-slide slide-ladak';
-            
-            let html = `<h2>${section.name}</h2>`;
-            html += `<div style="width:100%;max-width:700px;margin:0 auto;padding:5px 0;">`;
-            
-            if (records.length === 0) {
-              html += `<p class="ladak-empty">Нет данных</p>`;
-            } else {
-              records.forEach((record) => {
+            // Если есть записи с NAME - используем их
+            if (namedRecords.length > 0) {
+              // Создаем слайд с записями
+              const slideDiv = document.createElement('div');
+              slideDiv.className = 'slider-slide slide-ladak';
+              
+              let html = `<h2>${section.name}</h2>`;
+              html += `<div style="width:100%;max-width:700px;margin:0 auto;padding:5px 0;">`;
+              
+              namedRecords.forEach((record) => {
                 html += `<div class="ladak-record">`;
                 
                 let hasRecordData = false;
@@ -998,6 +967,88 @@
                 
                 html += `</div>`;
               });
+              
+              html += `</div>`;
+              slideDiv.innerHTML = html;
+              track.appendChild(slideDiv);
+              return;
+            }
+            
+            // Если нет записей с NAME - собираем все данные в одну запись
+            for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+              const row = rows[rowIndex];
+              if (row && row.c) {
+                const fieldName = row.c[0]?.v;
+                const fieldValue = row.c[section.colIndex]?.v;
+                if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
+                  sectionData[fieldName] = fieldValue.toString().trim();
+                  hasAnyData = true;
+                }
+              }
+            }
+            
+            // Создаем слайд
+            const slideDiv = document.createElement('div');
+            slideDiv.className = 'slider-slide slide-ladak';
+            
+            let html = `<h2>${section.name}</h2>`;
+            html += `<div style="width:100%;max-width:700px;margin:0 auto;padding:5px 0;">`;
+            
+            if (!hasAnyData || Object.keys(sectionData).length === 0) {
+              html += `<p class="ladak-empty">Нет данных</p>`;
+            } else {
+              html += `<div class="ladak-record">`;
+              
+              let hasRecordData = false;
+              
+              if (sectionData.TEXT && sectionData.TEXT.trim() !== '') {
+                const textWithBreaks = sectionData.TEXT.replace(/\n/g, '<br>');
+                html += `<div class="ladak-card"><p>${textWithBreaks}</p></div>`;
+                hasRecordData = true;
+              }
+              if (sectionData.FOTO && sectionData.FOTO.trim() !== '') {
+                html += `<div class="ladak-card"><img src="${sectionData.FOTO}" alt="${section.name}" onclick="openModalImage('${sectionData.FOTO}', '${section.name}')" style="cursor:pointer;max-width:100%;border-radius:6px;"></div>`;
+                hasRecordData = true;
+              }
+              if (sectionData.LINK && sectionData.LINK.trim() !== '') {
+                html += `<div class="ladak-card"><a href="${sectionData.LINK}" target="_blank">Подробнее →</a></div>`;
+                hasRecordData = true;
+              }
+              if (sectionData.CONTACT && sectionData.CONTACT.trim() !== '') {
+                html += `<div class="ladak-card" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;">`;
+                html += createContactIcons(sectionData.CONTACT);
+                html += `</div>`;
+                hasRecordData = true;
+              }
+              if (sectionData.DATE && sectionData.DATE.trim() !== '') {
+                html += `<div class="ladak-card"><p>📅 ${sectionData.DATE}</p></div>`;
+                hasRecordData = true;
+              }
+              if (sectionData.TIME && sectionData.TIME.trim() !== '') {
+                html += `<div class="ladak-card"><p>🕐 ${sectionData.TIME}</p></div>`;
+                hasRecordData = true;
+              }
+              if (sectionData.LOCATION && sectionData.LOCATION.trim() !== '') {
+                const coords = sectionData.LOCATION.replace(/\s/g, '').split(',');
+                html += `<div class="ladak-card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">`;
+                if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                  const lat = coords[0].trim();
+                  const lng = coords[1].trim();
+                  html += `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">📍 ${sectionData.LOCATION}</a>`;
+                  html += `<button onclick="copyToClipboard('${lat}, ${lng}')">📋 Копировать</button>`;
+                } else {
+                  html += `<a href="https://www.google.com/maps?q=${encodeURIComponent(sectionData.LOCATION)}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">📍 ${sectionData.LOCATION}</a>`;
+                  html += `<button onclick="copyToClipboard('${sectionData.LOCATION}')">📋 Копировать</button>`;
+                }
+                html += `</div>`;
+                hasRecordData = true;
+              }
+              
+              if (!hasRecordData) {
+                html += `<p class="ladak-empty">Нет данных для отображения</p>`;
+              }
+              
+              html += `</div>`;
             }
             
             html += `</div>`;
