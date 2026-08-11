@@ -96,7 +96,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       padding: 20px 30px;
       min-height: 100%;
     }
@@ -275,7 +275,6 @@
       text-align: left;
       width: 100%;
       box-sizing: border-box;
-      /* Убрана синяя полоса слева */
     }
     .ladak-card h4 {
       margin: 0;
@@ -787,10 +786,7 @@
             Приятного общения и ярких путешествий! 
           </p>
         </div>
-        <!-- Слайд 4-5: Данные из таблицы LADAK (динамические секции) -->
-        <div id="ladakSlidesContainer">
-          <!-- Сюда будут добавляться слайды из таблицы -->
-        </div>
+        <!-- Сюда будут добавляться слайды из таблицы (динамически) -->
       </div>
 
       <!-- Стрелки навигации -->
@@ -850,8 +846,7 @@
   <script>
     // --- ОСНОВНАЯ ЛОГИКА СЛАЙДЕРА ---
     const track = document.getElementById('sliderTrack');
-    const slides = track.querySelectorAll('.slider-slide');
-    let totalSlides = slides.length;
+    let totalSlides = track.querySelectorAll('.slider-slide').length;
     let currentSlide = 0;
     let isTransitioning = false;
 
@@ -868,7 +863,6 @@
       currentSlide = index;
       track.style.transform = `translateX(-${currentSlide * 100}%)`;
       
-      // Обновляем точки
       const allDots = dotsContainer.querySelectorAll('.slider-dot');
       allDots.forEach((dot, i) => {
         dot.classList.toggle('active', i === currentSlide);
@@ -893,27 +887,37 @@
       document.getElementById('sliderWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Синхронизация высоты слайдов
-    function syncSlideHeights() {
-      const allSlides = track.querySelectorAll('.slider-slide');
-      allSlides.forEach(slide => {
-        slide.style.minHeight = 'auto';
-      });
+    // --- ОБНОВЛЕНИЕ ТОЧЕК ---
+    function updateDots() {
+      // Удаляем старые точки (кроме первых трех)
+      const existingDots = dotsContainer.querySelectorAll('.slider-dot');
+      for (let i = 3; i < existingDots.length; i++) {
+        existingDots[i].remove();
+      }
       
-      let maxHeight = 0;
-      allSlides.forEach(slide => {
-        const height = slide.offsetHeight;
-        if (height > maxHeight) maxHeight = height;
-      });
+      // Добавляем новые точки
+      const total = track.querySelectorAll('.slider-slide').length;
+      for (let i = 3; i < total; i++) {
+        const dot = document.createElement('button');
+        dot.className = 'slider-dot';
+        dot.dataset.index = i;
+        dot.setAttribute('aria-label', `Слайд ${i+1}`);
+        dot.addEventListener('click', function() {
+          const index = parseInt(this.dataset.index);
+          goToSlide(index);
+        });
+        dotsContainer.appendChild(dot);
+      }
       
-      allSlides.forEach(slide => {
-        slide.style.minHeight = maxHeight + 'px';
+      // Обновляем активную точку
+      const allDots = dotsContainer.querySelectorAll('.slider-dot');
+      allDots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
       });
     }
 
-    // --- ЗАГРУЗКА ДАННЫХ ИЗ ТАБЛИЦЫ LADAK (как в Denim Bar) ---
+    // --- ЗАГРУЗКА ДАННЫХ ИЗ ТАБЛИЦЫ LADAK ---
     function loadLadakData() {
-      const container = document.getElementById('ladakSlidesContainer');
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
       const sheetName = 'data';
       
@@ -925,7 +929,7 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // Получаем названия секций из ПЕРВОЙ строки (индекс 0)
+          // Получаем названия секций из ПЕРВОЙ строки
           const sections = [];
           if (rows[0] && rows[0].c) {
             for (let col = 1; col < rows[0].c.length; col++) {
@@ -938,11 +942,13 @@
             }
           }
           
-          container.innerHTML = '';
+          // Удаляем старые слайды LADAK (если есть)
+          const oldSlides = track.querySelectorAll('.slide-ladak');
+          oldSlides.forEach(slide => slide.remove());
           
-          // Для каждой секции создаем слайд
-          sections.forEach((section, index) => {
-            // Собираем поля для этой секции
+          // Для каждой секции создаем ОТДЕЛЬНЫЙ слайд
+          sections.forEach((section) => {
+            // Собираем поля
             const fields = {};
             for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
               const row = rows[rowIndex];
@@ -962,10 +968,8 @@
             let html = `<h2>${section.name}</h2>`;
             html += `<div style="width:100%;max-width:700px;margin:0 auto;padding:5px 0;">`;
             
-            // Проверяем, есть ли хоть какие-то данные
             let hasData = false;
             
-            // Показываем только заполненные поля (каждый элемент в отдельной карточке)
             if (fields.NAME && fields.NAME.trim() !== '') {
               html += `<div class="ladak-card"><h4>${fields.NAME}</h4></div>`;
               hasData = true;
@@ -1000,12 +1004,14 @@
             }
             
             if (!hasData) {
-              html += `<p class="ladak-empty">Нет данных для отображения</p>`;
+              html += `<p class="ladak-empty">Нет данных</p>`;
             }
             
             html += `</div>`;
             slideDiv.innerHTML = html;
-            container.appendChild(slideDiv);
+            
+            // Добавляем слайд в трек
+            track.appendChild(slideDiv);
           });
           
           // Обновляем количество слайдов
@@ -1014,50 +1020,23 @@
           // Обновляем точки
           updateDots();
           
-          // Синхронизируем высоту
-          setTimeout(syncSlideHeights, 100);
+          // Возвращаем на первый слайд
+          goToSlide(0);
           
         })
         .catch(error => {
           console.error('Ошибка загрузки:', error);
-          container.innerHTML = `
-            <div class="slider-slide slide-ladak">
-              <h2>Новости и события</h2>
-              <p class="ladak-empty">⚠️ Ошибка загрузки данных</p>
-            </div>
+          // Показываем сообщение об ошибке
+          const errorSlide = document.createElement('div');
+          errorSlide.className = 'slider-slide slide-ladak';
+          errorSlide.innerHTML = `
+            <h2>Новости и события</h2>
+            <p class="ladak-empty">⚠️ Ошибка загрузки данных</p>
           `;
+          track.appendChild(errorSlide);
           totalSlides = track.querySelectorAll('.slider-slide').length;
           updateDots();
         });
-    }
-
-    // --- ОБНОВЛЕНИЕ ТОЧЕК ---
-    function updateDots() {
-      // Удаляем старые точки (кроме первых трех)
-      const existingDots = dotsContainer.querySelectorAll('.slider-dot');
-      for (let i = 3; i < existingDots.length; i++) {
-        existingDots[i].remove();
-      }
-      
-      // Добавляем новые точки
-      const total = track.querySelectorAll('.slider-slide').length;
-      for (let i = 3; i < total; i++) {
-        const dot = document.createElement('button');
-        dot.className = 'slider-dot';
-        dot.dataset.index = i;
-        dot.setAttribute('aria-label', `Слайд ${i+1}`);
-        dot.addEventListener('click', function() {
-          const index = parseInt(this.dataset.index);
-          goToSlide(index);
-        });
-        dotsContainer.appendChild(dot);
-      }
-      
-      // Обновляем активную точку
-      const allDots = dotsContainer.querySelectorAll('.slider-dot');
-      allDots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === currentSlide);
-      });
     }
 
     // --- ИНИЦИАЛИЗАЦИЯ ---
@@ -1067,13 +1046,9 @@
       
       // Настраиваем слайдер
       setTimeout(() => {
-        syncSlideHeights();
         track.style.transform = `translateX(0%)`;
-        updateDots();
-      }, 200);
+      }, 100);
     });
-
-    window.addEventListener('resize', syncSlideHeights);
 
     // --- УПРАВЛЕНИЕ СЛАЙДЕРОМ ---
     prevBtn.addEventListener('click', prevSlide);
