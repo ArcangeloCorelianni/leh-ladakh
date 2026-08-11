@@ -268,13 +268,14 @@
       text-align: center;
     }
     .ladak-card {
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 8px;
-      padding: 15px 20px;
-      margin-bottom: 15px;
-      text-align: left;
-      width: 100%;
-      box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-left: 2px solid #00b2ff;
+    }
+    .ladak-card:last-child {
+      margin-bottom: 0;
     }
     .ladak-card h4 {
       margin: 0;
@@ -301,20 +302,23 @@
     .ladak-card a:hover {
       text-decoration: underline;
     }
+    
+    .ladak-record {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .ladak-record:last-child {
+      margin-bottom: 0;
+    }
+    
     .ladak-empty {
       text-align: center;
       color: #aaa;
       padding: 20px 0;
-    }
-    .ladak-record {
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      padding-bottom: 15px;
-      margin-bottom: 15px;
-    }
-    .ladak-record:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
     }
 
     @keyframes slideInFromRight {
@@ -430,7 +434,10 @@
         font-size: 1rem;
       }
       .ladak-card {
-        padding: 12px 15px;
+        padding: 10px 12px;
+      }
+      .ladak-record {
+        padding: 10px;
       }
     }
 
@@ -962,7 +969,6 @@
             const records = [];
             let currentRecord = {};
             let hasData = false;
-            let hasName = false;
             
             for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
               const row = rows[rowIndex];
@@ -984,9 +990,6 @@
                   if (fieldValue && fieldValue.trim() !== '') {
                     currentRecord[fieldName] = fieldValue;
                     hasData = true;
-                    hasName = true;
-                  } else {
-                    hasName = false;
                   }
                   continue;
                 }
@@ -1014,8 +1017,8 @@
             if (records.length === 0) {
               html += `<p class="ladak-empty">Нет данных</p>`;
             } else {
-              // Показываем ВСЕ записи
-              records.forEach((record, index) => {
+              // Показываем ВСЕ записи, каждая в отдельной группе
+              records.forEach((record) => {
                 html += `<div class="ladak-record">`;
                 
                 let hasRecordData = false;
