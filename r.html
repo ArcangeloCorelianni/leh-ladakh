@@ -288,21 +288,15 @@
       border-radius: 8px;
       margin: 20px 0;
       background: rgba(0, 0, 0, 0.3);
-      height: auto !important;
-      min-height: 150px;
-      transition: height 0.5s ease;
-      display: flex;
-      align-items: center;
+      min-height: 100px;
     }
 
     .slider-track {
       display: flex;
       transition: transform 0.5s ease;
       will-change: transform;
-      align-items: stretch;
+      align-items: flex-start;
       width: 100%;
-      height: auto !important;
-      min-height: 150px;
     }
 
     .slider-slide {
@@ -312,9 +306,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 20px 30px 30px;
-      height: auto !important;
-      min-height: 150px;
+      padding: 20px 50px 30px;
       width: 100%;
       overflow: visible !important;
       text-align: center;
@@ -325,8 +317,6 @@
       padding-bottom: 10px;
       width: 100%;
       max-width: 100%;
-      height: auto !important;
-      min-height: auto;
     }
     .slide-ladak h2 {
       color: #00b2ff;
@@ -513,11 +503,11 @@
     }
 
     .slider-arrow.prev {
-      left: 12px;
+      left: 6px;
     }
 
     .slider-arrow.next {
-      right: 12px;
+      right: 6px;
     }
 
     /* Увеличиваем зону нажатия для стрелок */
@@ -561,8 +551,8 @@
       .slider-slide {
         padding-top: 5px !important;
         padding-bottom: 5px !important;
-        padding-left: 15px !important;
-        padding-right: 15px !important;
+        padding-left: 40px !important;
+        padding-right: 40px !important;
       }
       .slider-arrow {
         width: 32px;
@@ -570,10 +560,10 @@
         font-size: 1rem;
       }
       .slider-arrow.prev {
-        left: 6px;
+        left: 4px;
       }
       .slider-arrow.next {
-        right: 6px;
+        right: 4px;
       }
       .slider-arrow::after {
         top: -15px;
@@ -963,7 +953,7 @@
 
   <script>
     // ============================================================
-    // 1. СЛАЙДЕР С БЕСКОНЕЧНОЙ КАРУСЕЛЬЮ (АДАПТИВНАЯ ВЫСОТА)
+    // 1. СЛАЙДЕР С БЕСКОНЕЧНОЙ КАРУСЕЛЬЮ (АВТОМАТИЧЕСКАЯ ВЫСОТА)
     // ============================================================
     const track = document.getElementById('sliderTrack');
     const wrapper = document.getElementById('sliderWrapper');
@@ -975,43 +965,23 @@
     const nextBtn = document.getElementById('sliderNext');
     const dotsContainer = document.getElementById('sliderDots');
 
-    // --- Установка высоты контейнера ---
-    function setWrapperHeight(index) {
-      const slides = document.querySelectorAll('.slider-slide');
+    // --- Функция для обновления высоты wrapper на основе содержимого ---
+    function updateWrapperHeight() {
+      // Находим все реальные слайды (не клоны)
+      const slides = document.querySelectorAll('.slider-slide:not(.slide-clone)');
       if (slides.length === 0) {
-        wrapper.style.height = '150px';
-        wrapper.style.minHeight = '150px';
+        wrapper.style.minHeight = '100px';
         return;
       }
       
-      // Находим реальный слайд (учитываем клоны)
-      let realIndex = index;
-      const totalReal = totalSlides;
-      if (realIndex === 0) realIndex = totalReal - 1;
-      else if (realIndex === totalReal + 1) realIndex = 0;
-      else realIndex = realIndex - 1;
+      let maxHeight = 0;
+      slides.forEach(slide => {
+        const height = slide.scrollHeight;
+        if (height > maxHeight) maxHeight = height;
+      });
       
-      if (realIndex < 0 || realIndex >= totalReal) {
-        wrapper.style.height = '150px';
-        wrapper.style.minHeight = '150px';
-        return;
-      }
-      
-      const slide = slides[realIndex];
-      if (!slide) {
-        wrapper.style.height = '150px';
-        wrapper.style.minHeight = '150px';
-        return;
-      }
-      
-      // Получаем реальную высоту контента
-      const height = slide.scrollHeight;
-      const minHeight = 150;
-      
-      // Устанавливаем высоту с небольшим запасом
-      const finalHeight = Math.max(height + 40, minHeight);
-      wrapper.style.height = finalHeight + 'px';
-      wrapper.style.minHeight = finalHeight + 'px';
+      // Устанавливаем минимальную высоту, но позволяем контейнеру растягиваться
+      wrapper.style.minHeight = Math.max(maxHeight + 40, 100) + 'px';
     }
 
     // --- Обновление точек ---
@@ -1042,28 +1012,28 @@
       track.style.transition = 'transform 0.5s ease';
       track.style.transform = `translateX(-${currentSlide * 100}%)`;
       updateDots(index);
-      setWrapperHeight(index);
+      
+      // Обновляем высоту после анимации
+      setTimeout(() => {
+        updateWrapperHeight();
+      }, 50);
       
       setTimeout(() => {
         isTransitioning = false;
         // Проверяем, не на клоне ли мы
         if (currentSlide === 0) {
-          // На клоне последнего - переходим на реальный последний
           track.style.transition = 'none';
           currentSlide = totalSlides;
           track.style.transform = `translateX(-${currentSlide * 100}%)`;
           updateDots(currentSlide);
-          setWrapperHeight(currentSlide);
           setTimeout(() => {
             track.style.transition = 'transform 0.5s ease';
           }, 50);
         } else if (currentSlide === totalSlides + 1) {
-          // На клоне первого - переходим на реальный первый
           track.style.transition = 'none';
           currentSlide = 1;
           track.style.transform = `translateX(-${currentSlide * 100}%)`;
           updateDots(currentSlide);
-          setWrapperHeight(currentSlide);
           setTimeout(() => {
             track.style.transition = 'transform 0.5s ease';
           }, 50);
@@ -1186,15 +1156,6 @@
       
       html += '</span>';
       return html;
-    }
-
-    // --- Функция для обновления высоты после загрузки изображений ---
-    function updateHeightAfterImages() {
-      setTimeout(() => {
-        if (currentSlide !== undefined) {
-          setWrapperHeight(currentSlide);
-        }
-      }, 300);
     }
 
     // --- Загрузка данных ---
@@ -1381,14 +1342,14 @@
             track.style.transform = `translateX(-100%)`;
             updateDots(1);
             
-            // Устанавливаем высоту с задержкой
+            // Обновляем высоту после загрузки
             setTimeout(() => {
               track.style.transition = 'transform 0.5s ease';
-              setWrapperHeight(1);
+              updateWrapperHeight();
               
               // Дополнительная корректировка после загрузки изображений
               setTimeout(() => {
-                setWrapperHeight(1);
+                updateWrapperHeight();
               }, 500);
             }, 100);
           }
@@ -1405,7 +1366,7 @@
           totalSlides = 1;
           createDots(1);
           setTimeout(() => {
-            setWrapperHeight(0);
+            updateWrapperHeight();
           }, 300);
         });
     }
@@ -1418,10 +1379,10 @@
             mutation.addedNodes.forEach(function(node) {
               if (node.tagName === 'IMG') {
                 node.addEventListener('load', function() {
-                  updateHeightAfterImages();
+                  setTimeout(updateWrapperHeight, 100);
                 });
                 node.addEventListener('error', function() {
-                  updateHeightAfterImages();
+                  setTimeout(updateWrapperHeight, 100);
                 });
               }
             });
@@ -1443,11 +1404,7 @@
       let resizeTimer;
       window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-          if (currentSlide !== undefined) {
-            setWrapperHeight(currentSlide);
-          }
-        }, 300);
+        resizeTimer = setTimeout(updateWrapperHeight, 300);
       });
     });
 
