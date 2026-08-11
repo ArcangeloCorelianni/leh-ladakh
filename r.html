@@ -748,16 +748,17 @@
       const allSlides = track.querySelectorAll('.slider-slide');
       
       sections.forEach((section, index) => {
-        // Всегда создаем кнопку для каждой секции
-        const btn = document.createElement('a');
-        btn.href = '#';
-        btn.className = 'admin-link-leh';
-        btn.setAttribute('onclick', `goToSectionSlide(${index}, event); return false;`);
-        btn.innerHTML = `
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
-          ${section.name}
-        `;
-        container.appendChild(btn);
+        if (index < allSlides.length) {
+          const btn = document.createElement('a');
+          btn.href = '#';
+          btn.className = 'admin-link-leh';
+          btn.setAttribute('onclick', `goToSectionSlide(${index}, event); return false;`);
+          btn.innerHTML = `
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
+            ${section.name}
+          `;
+          container.appendChild(btn);
+        }
       });
     }
 
@@ -803,7 +804,7 @@
       return html;
     }
 
-    // --- ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ ---
+    // --- ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ (ПРОПУСКАЕТ ПУСТЫЕ СТОЛБЦЫ) ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
       const sheetName = 'data';
@@ -815,13 +816,14 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // --- 1. Собираем ТОЛЬКО непустые секции ---
+          // --- 1. Собираем ТОЛЬКО непустые секции (пропускаем пустые столбцы) ---
           const sections = [];
           if (rows[0] && rows[0].c) {
             for (let col = 1; col < rows[0].c.length; col++) {
               const cell = rows[0].c[col];
               if (cell && cell.v) {
                 const name = cell.v.toString().trim();
+                // КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: пропускаем пустые названия
                 if (name && name.length > 0 && name !== 'undefined' && name !== '') {
                   sections.push({
                     name: name,
@@ -836,7 +838,7 @@
           const oldSlides = track.querySelectorAll('.slider-slide');
           oldSlides.forEach(slide => slide.remove());
           
-          // --- 2. Для КАЖДОЙ секции создаем слайд (даже если нет данных) ---
+          // --- 2. Для КАЖДОЙ секции создаем слайд ---
           sections.forEach((section) => {
             // Собираем данные для секции
             const records = [];
