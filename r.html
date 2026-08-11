@@ -54,28 +54,33 @@
       position: fixed;
       bottom: 30px;
       right: 30px;
-      width: 60px;
-      height: 60px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      background: #00b2ff;
-      color: white;
-      border: none;
-      font-size: 30px;
+      background: rgba(150, 150, 150, 0.35);
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 28px;
+      font-weight: 300;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 178, 255, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
       z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
       line-height: 1;
+      user-select: none;
     }
     .floating-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 20px rgba(0, 178, 255, 0.6);
+      background: rgba(180, 180, 180, 0.5);
+      transform: scale(1.08);
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
     }
     .floating-btn:active {
-      transform: scale(0.95);
+      transform: scale(0.92);
     }
 
     /* --- MODAL OVERLAY --- */
@@ -86,12 +91,13 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       z-index: 2000;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 16px;
       box-sizing: border-box;
     }
     .modal-overlay.active {
@@ -99,122 +105,135 @@
     }
 
     .modal-form {
-      background: rgba(20, 20, 30, 0.95);
-      border-radius: 16px;
-      padding: 30px;
-      max-width: 500px;
+      background: rgba(20, 20, 30, 0.92);
+      border-radius: 12px;
+      padding: 24px 28px 28px;
+      max-width: 440px;
       width: 100%;
-      max-height: 90vh;
+      max-height: 85vh;
       overflow-y: auto;
-      border: 1px solid #00b2ff;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
       position: relative;
     }
     .modal-form::-webkit-scrollbar {
-      width: 4px;
+      width: 3px;
     }
     .modal-form::-webkit-scrollbar-thumb {
-      background: #00b2ff;
+      background: rgba(255, 255, 255, 0.2);
       border-radius: 4px;
     }
 
     .modal-form .close-modal {
       position: absolute;
-      top: 12px;
-      right: 18px;
-      font-size: 28px;
-      color: #aaa;
+      top: 8px;
+      right: 14px;
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.4);
       cursor: pointer;
       transition: color 0.2s;
       background: none;
       border: none;
+      padding: 4px 8px;
+      line-height: 1;
     }
     .modal-form .close-modal:hover {
-      color: #fff;
+      color: rgba(255, 255, 255, 0.8);
     }
 
     .modal-form h2 {
       margin-top: 0;
-      color: #00b2ff;
-      border-bottom: 1px solid #444;
-      padding-bottom: 12px;
+      margin-bottom: 16px;
+      color: rgba(255, 255, 255, 0.85);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 10px;
       text-align: center;
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
     }
 
     .modal-form label {
       display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #ddd;
-      font-size: 0.95rem;
+      margin-top: 10px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .modal-form label:first-of-type {
-      margin-top: 5px;
+      margin-top: 2px;
     }
 
     .modal-form input,
     .modal-form textarea,
     .modal-form select {
       width: 100%;
-      padding: 10px 12px;
-      margin-top: 5px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 8px;
-      color: #fff;
-      font-size: 1rem;
+      padding: 8px 12px;
+      margin-top: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.9rem;
       font-family: 'Lora', serif;
       box-sizing: border-box;
-      transition: border-color 0.3s;
+      transition: border-color 0.3s, background 0.3s;
     }
     .modal-form input:focus,
     .modal-form textarea:focus,
     .modal-form select:focus {
       outline: none;
-      border-color: #00b2ff;
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
     }
     .modal-form textarea {
-      min-height: 80px;
+      min-height: 56px;
       resize: vertical;
+      font-size: 0.85rem;
     }
     .modal-form select option {
-      background: #222;
+      background: #1a1a2e;
       color: #fff;
     }
 
     .modal-form .submit-btn {
       width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      background: #00b2ff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: bold;
+      padding: 10px;
+      margin-top: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 400;
       cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
+      transition: background 0.3s, transform 0.2s, color 0.3s;
+      letter-spacing: 0.3px;
     }
     .modal-form .submit-btn:hover {
-      background: #0099dd;
+      background: rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.9);
     }
     .modal-form .submit-btn:active {
       transform: scale(0.98);
     }
     .modal-form .submit-btn:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
     }
 
     .modal-form .success-msg {
       display: none;
       text-align: center;
-      color: #4caf50;
-      padding: 15px;
-      margin-top: 10px;
-      border-radius: 8px;
-      background: rgba(76, 175, 80, 0.15);
-      border: 1px solid #4caf50;
+      color: rgba(76, 175, 80, 0.8);
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 6px;
+      background: rgba(76, 175, 80, 0.08);
+      border: 1px solid rgba(76, 175, 80, 0.15);
+      font-size: 0.85rem;
     }
     .modal-form .success-msg.show {
       display: block;
@@ -223,12 +242,13 @@
     .modal-form .error-msg {
       display: none;
       text-align: center;
-      color: #ff6b6b;
-      padding: 15px;
-      margin-top: 10px;
-      border-radius: 8px;
-      background: rgba(255, 107, 107, 0.15);
-      border: 1px solid #ff6b6b;
+      color: rgba(255, 107, 107, 0.8);
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 6px;
+      background: rgba(255, 107, 107, 0.08);
+      border: 1px solid rgba(255, 107, 107, 0.15);
+      font-size: 0.85rem;
     }
     .modal-form .error-msg.show {
       display: block;
@@ -553,15 +573,33 @@
         max-height: 200px;
       }
       .floating-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 24px;
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
         bottom: 20px;
         right: 20px;
       }
       .modal-form {
-        padding: 20px;
-        margin: 10px;
+        padding: 18px 18px 22px;
+        margin: 8px;
+        max-width: 100%;
+      }
+      .modal-form h2 {
+        font-size: 1rem;
+      }
+      .modal-form label {
+        font-size: 0.7rem;
+        margin-top: 8px;
+      }
+      .modal-form input,
+      .modal-form textarea,
+      .modal-form select {
+        padding: 6px 10px;
+        font-size: 0.82rem;
+      }
+      .modal-form .submit-btn {
+        padding: 8px;
+        font-size: 0.85rem;
       }
     }
 
@@ -813,11 +851,11 @@
   <div class="modal-overlay" id="addModal">
     <div class="modal-form">
       <button class="close-modal" id="closeModalBtn">&times;</button>
-      <h2>➕ Добавить запись</h2>
+      <h2>Добавить запись</h2>
       
       <form id="addForm">
-        <label for="formName">Название *</label>
-        <input type="text" id="formName" name="NAME" placeholder="Название места/объекта" required>
+        <label for="formName">Название</label>
+        <input type="text" id="formName" name="NAME" placeholder="Название места" required>
         
         <label for="formText">Описание</label>
         <textarea id="formText" name="TEXT" placeholder="Подробное описание"></textarea>
@@ -825,7 +863,7 @@
         <label for="formFoto">Ссылка на фото</label>
         <input type="url" id="formFoto" name="FOTO" placeholder="https://example.com/photo.jpg">
         
-        <label for="formLink">Ссылка (подробнее)</label>
+        <label for="formLink">Ссылка</label>
         <input type="url" id="formLink" name="LINK" placeholder="https://example.com">
         
         <label for="formContact">Контакты</label>
@@ -840,7 +878,7 @@
         <label for="formLocation">Координаты</label>
         <input type="text" id="formLocation" name="LOCATION" placeholder="34.142900, 77.572209">
         
-        <label for="formSection">Раздел *</label>
+        <label for="formSection">Раздел</label>
         <select id="formSection" name="SECTION" required>
           <option value="">Выберите раздел</option>
           <option value="Правила группы">Правила группы</option>
@@ -850,10 +888,10 @@
           <option value="Друзья и парнёры">Друзья и парнёры</option>
         </select>
         
-        <div class="success-msg" id="successMsg">✅ Запись успешно добавлена!</div>
-        <div class="error-msg" id="errorMsg">❌ Ошибка при добавлении записи. Попробуйте снова.</div>
+        <div class="success-msg" id="successMsg">Запись успешно добавлена</div>
+        <div class="error-msg" id="errorMsg">Ошибка при добавлении записи</div>
         
-        <button type="submit" class="submit-btn" id="submitBtn">📤 Отправить</button>
+        <button type="submit" class="submit-btn" id="submitBtn">Отправить</button>
       </form>
     </div>
   </div>
@@ -895,7 +933,7 @@
 
   <script>
     // ============================================================
-    // 1. ОСНОВНАЯ ЛОГИКА СЛАЙДЕРА (как была)
+    // 1. ОСНОВНАЯ ЛОГИКА СЛАЙДЕРА
     // ============================================================
     const track = document.getElementById('sliderTrack');
     const wrapper = document.getElementById('sliderWrapper');
@@ -1299,7 +1337,6 @@
     // 2. FLOATING BUTTON + MODAL FORM
     // ============================================================
     
-    // --- Элементы ---
     const floatingBtn = document.getElementById('floatingBtn');
     const modalOverlay = document.getElementById('addModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
@@ -1308,16 +1345,13 @@
     const successMsg = document.getElementById('successMsg');
     const errorMsg = document.getElementById('errorMsg');
 
-    // --- Открыть модальное окно ---
     function openModal() {
       modalOverlay.classList.add('active');
       document.body.style.overflow = 'hidden';
-      // Скрываем старые сообщения
       successMsg.classList.remove('show');
       errorMsg.classList.remove('show');
     }
 
-    // --- Закрыть модальное окно ---
     function closeModal() {
       modalOverlay.classList.remove('active');
       document.body.style.overflow = 'auto';
@@ -1327,14 +1361,12 @@
     floatingBtn.addEventListener('click', openModal);
     closeModalBtn.addEventListener('click', closeModal);
 
-    // Закрытие по клику на фон
     modalOverlay.addEventListener('click', function(e) {
       if (e.target === modalOverlay) {
         closeModal();
       }
     });
 
-    // Закрытие по Escape
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
         closeModal();
@@ -1345,7 +1377,6 @@
     addForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      // Собираем данные
       const formData = new FormData(addForm);
       const data = {
         NAME: formData.get('NAME'),
@@ -1360,60 +1391,52 @@
         timestamp: new Date().toISOString()
       };
 
-      // Валидация
       if (!data.NAME || !data.SECTION) {
-        errorMsg.textContent = '❌ Заполните обязательные поля: Название и Раздел';
+        errorMsg.textContent = 'Заполните обязательные поля: Название и Раздел';
         errorMsg.classList.add('show');
         successMsg.classList.remove('show');
         return;
       }
 
-      // Блокируем кнопку
       submitBtn.disabled = true;
-      submitBtn.textContent = '⏳ Отправка...';
+      submitBtn.textContent = 'Отправка...';
       successMsg.classList.remove('show');
       errorMsg.classList.remove('show');
 
       try {
-        // --- ВАЖНО: Замените URL на ваш Google Apps Script Web App URL ---
-        // Инструкция по настройке Google Apps Script ниже
+        // ЗАМЕНИТЕ НА ВАШ URL
         const scriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
         
         const response = await fetch(scriptURL, {
           method: 'POST',
-          mode: 'no-cors', // Важно для Google Apps Script
+          mode: 'no-cors',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(data)
         });
 
-        // При mode: 'no-cors' мы не можем прочитать ответ
-        // Поэтому показываем успех, если нет ошибки сети
         successMsg.classList.add('show');
         errorMsg.classList.remove('show');
-        
-        // Очищаем форму
         addForm.reset();
         
-        // Обновляем данные на сайте через 2 секунды
         setTimeout(() => {
           loadLadakData();
         }, 2000);
 
       } catch (error) {
         console.error('Ошибка:', error);
-        errorMsg.textContent = '❌ Ошибка при отправке. Проверьте подключение к интернету.';
+        errorMsg.textContent = 'Ошибка при отправке. Проверьте подключение.';
         errorMsg.classList.add('show');
         successMsg.classList.remove('show');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = '📤 Отправить';
+        submitBtn.textContent = 'Отправить';
       }
     });
 
     // ============================================================
-    // 3. ГАЛЕРЕЯ (модальное окно)
+    // 3. ГАЛЕРЕЯ
     // ============================================================
     const modal = document.getElementById("galleryModal");
     const modalImg = document.getElementById("modalImg");
@@ -1488,7 +1511,6 @@
       }
     });
 
-    // --- ПРАВИЛА (модальное окно) ---
     function openRulesModal(e) {
       if (e) e.preventDefault();
       document.getElementById('rulesModal').style.display = "block";
