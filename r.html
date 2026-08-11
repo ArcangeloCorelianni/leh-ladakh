@@ -1005,33 +1005,25 @@
       const container = document.getElementById('sectionButtons');
       container.innerHTML = '';
       
-      // Находим все слайды LADAK (их порядок в треке)
+      // Получаем все слайды
       const allSlides = track.querySelectorAll('.slider-slide');
       
-      sections.forEach((section) => {
-        // Ищем соответствующий слайд по заголовку h2
-        let slideIndex = -1;
-        allSlides.forEach((slide, idx) => {
-          const h2 = slide.querySelector('h2');
-          if (h2 && h2.textContent.trim() === section.name.trim()) {
-            slideIndex = idx;
-          }
-        });
+      sections.forEach((section, index) => {
+        // Индекс слайда = 3 (первые 3 слайда) + index
+        const slideIndex = 3 + index;
         
-        if (slideIndex === -1) {
-          // Если не нашли, используем индекс по порядку
-          slideIndex = allSlides.length - sections.length + sections.indexOf(section);
+        // Проверяем, существует ли слайд с таким индексом
+        if (slideIndex < allSlides.length) {
+          const btn = document.createElement('a');
+          btn.href = '#';
+          btn.className = 'admin-link-leh';
+          btn.setAttribute('onclick', `goToSectionSlide(${slideIndex}, event); return false;`);
+          btn.innerHTML = `
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
+            ${section.name}
+          `;
+          container.appendChild(btn);
         }
-        
-        const btn = document.createElement('a');
-        btn.href = '#';
-        btn.className = 'admin-link-leh';
-        btn.setAttribute('onclick', `goToSectionSlide(${slideIndex}, event); return false;`);
-        btn.innerHTML = `
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
-          ${section.name}
-        `;
-        container.appendChild(btn);
       });
     }
 
