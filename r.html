@@ -952,16 +952,17 @@
             }
           }
           
-          // Удаляем старые слайды LADAK (если есть)
+          // Удаляем старые слайды LADAK
           const oldSlides = track.querySelectorAll('.slide-ladak');
           oldSlides.forEach(slide => slide.remove());
           
-          // Для каждой секции создаем ОТДЕЛЬНЫЙ слайд
+          // Для каждой секции создаем слайд
           sections.forEach((section) => {
-            // Собираем все записи для этой секции
+            // Собираем ВСЕ записи для этой секции
             const records = [];
             let currentRecord = {};
             let hasData = false;
+            let hasName = false;
             
             for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
               const row = rows[rowIndex];
@@ -969,28 +970,37 @@
                 const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
-                // Если поле NAME и оно пустое - проверяем, есть ли другие поля
-                if (fieldName === 'NAME' && !fieldValue) {
-                  // Если в текущей записи есть данные - сохраняем её
-                  if (hasData) {
+                // Если поле NAME - это маркер начала новой записи
+                if (fieldName === 'NAME') {
+                  // Если уже есть запись с данными - сохраняем её
+                  if (hasData && Object.keys(currentRecord).length > 0) {
                     records.push(currentRecord);
-                    currentRecord = {};
-                    hasData = false;
+                  }
+                  // Начинаем новую запись
+                  currentRecord = {};
+                  hasData = false;
+                  
+                  // Если NAME заполнено - добавляем
+                  if (fieldValue && fieldValue.trim() !== '') {
+                    currentRecord[fieldName] = fieldValue;
+                    hasData = true;
+                    hasName = true;
+                  } else {
+                    hasName = false;
                   }
                   continue;
                 }
                 
-                if (fieldName) {
+                // Для остальных полей - добавляем в текущую запись
+                if (fieldName && fieldValue && fieldValue.trim() !== '') {
                   currentRecord[fieldName] = fieldValue;
-                  if (fieldValue && fieldValue.trim() !== '') {
-                    hasData = true;
-                  }
+                  hasData = true;
                 }
               }
             }
             
-            // Добавляем последнюю запись, если есть данные
-            if (hasData) {
+            // Добавляем последнюю запись
+            if (hasData && Object.keys(currentRecord).length > 0) {
               records.push(currentRecord);
             }
             
@@ -1004,7 +1014,7 @@
             if (records.length === 0) {
               html += `<p class="ladak-empty">Нет данных</p>`;
             } else {
-              // Показываем все записи
+              // Показываем ВСЕ записи
               records.forEach((record, index) => {
                 html += `<div class="ladak-record">`;
                 
