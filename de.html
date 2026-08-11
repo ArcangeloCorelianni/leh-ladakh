@@ -281,7 +281,7 @@
       transform: scale(1.05);
     }
     
-    /* --- SLIDER STYLES --- */
+    /* --- SLIDER STYLES (ИСПРАВЛЕНЫ) --- */
     .slider-wrapper {
       position: relative;
       overflow: hidden;
@@ -289,7 +289,7 @@
       margin: 20px 0;
       background: rgba(0, 0, 0, 0.3);
       height: auto !important;
-      min-height: 200px;
+      min-height: 150px;
       transition: height 0.5s ease;
     }
 
@@ -297,8 +297,8 @@
       display: flex;
       transition: transform 0.5s ease;
       will-change: transform;
-      align-items: stretch;
-      height: 100%;
+      align-items: flex-start;
+      height: auto !important;
     }
 
     .slider-slide {
@@ -310,7 +310,7 @@
       justify-content: flex-start;
       padding: 20px 30px;
       height: auto !important;
-      min-height: 100%;
+      min-height: 150px;
       width: 100%;
       overflow: visible !important;
       text-align: center;
@@ -933,7 +933,7 @@
 
   <script>
     // ============================================================
-    // 1. ОСНОВНАЯ ЛОГИКА СЛАЙДЕРА
+    // 1. ОСНОВНАЯ ЛОГИКА СЛАЙДЕРА (ИСПРАВЛЕНА)
     // ============================================================
     const track = document.getElementById('sliderTrack');
     const wrapper = document.getElementById('sliderWrapper');
@@ -945,11 +945,17 @@
     const nextBtn = document.getElementById('sliderNext');
     const dotsContainer = document.getElementById('sliderDots');
 
-    function adjustSliderHeight() {
+    // --- Функция подстройки высоты для КАЖДОГО слайда отдельно ---
+    function adjustSlideHeights() {
       const slides = document.querySelectorAll('.slider-slide');
-      let maxHeight = 0;
       
+      // Сначала сбрасываем высоту контейнера
+      wrapper.style.height = 'auto';
+      wrapper.style.minHeight = '150px';
+      
+      // Для каждого слайда устанавливаем свою высоту
       slides.forEach(slide => {
+        // Показываем слайд для измерения
         const originalDisplay = slide.style.display;
         const originalPosition = slide.style.position;
         const originalOpacity = slide.style.opacity;
@@ -963,9 +969,10 @@
         slide.style.minHeight = 'auto';
         slide.style.overflow = 'visible';
         
+        // Измеряем высоту
         const height = slide.scrollHeight;
-        if (height > maxHeight) maxHeight = height;
         
+        // Восстанавливаем стили
         slide.style.display = originalDisplay;
         slide.style.position = originalPosition;
         slide.style.opacity = originalOpacity;
@@ -973,15 +980,25 @@
         slide.style.height = '';
         slide.style.minHeight = '';
         slide.style.overflow = '';
+        
+        // Устанавливаем минимальную высоту для слайда
+        if (height > 0) {
+          slide.style.minHeight = (height + 40) + 'px';
+        }
       });
       
-      maxHeight += 80;
-      
-      if (maxHeight > 0) {
-        wrapper.style.height = maxHeight + 'px';
-        wrapper.style.minHeight = maxHeight + 'px';
-        wrapper.style.maxHeight = 'none';
-      }
+      // После того как все слайды получили свою высоту,
+      // устанавливаем высоту обертки равной высоте текущего слайда
+      setTimeout(() => {
+        const activeSlide = document.querySelector('.slider-slide');
+        if (activeSlide) {
+          const height = activeSlide.scrollHeight;
+          if (height > 0) {
+            wrapper.style.height = (height + 40) + 'px';
+            wrapper.style.minHeight = (height + 40) + 'px';
+          }
+        }
+      }, 50);
     }
 
     function goToSlide(index) {
@@ -999,8 +1016,16 @@
         dot.classList.toggle('active', i === currentSlide);
       });
       
+      // Подстраиваем высоту под новый слайд
       setTimeout(() => {
-        adjustSliderHeight();
+        const activeSlide = document.querySelectorAll('.slider-slide')[currentSlide];
+        if (activeSlide) {
+          const height = activeSlide.scrollHeight;
+          if (height > 0) {
+            wrapper.style.height = (height + 40) + 'px';
+            wrapper.style.minHeight = (height + 40) + 'px';
+          }
+        }
         isTransitioning = false;
       }, 550);
     }
@@ -1136,7 +1161,6 @@
     }
 
     function loadLadakData() {
-      // Используем исходную таблицу для отображения данных
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
       const sheetName = 'data';
       const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
@@ -1293,8 +1317,25 @@
           if (totalSlides > 0) {
             updateDots();
             updateSectionButtons(sections);
-            goToSlide(0);
-            setTimeout(adjustSliderHeight, 500);
+            
+            // Даем время на рендеринг, затем настраиваем высоты
+            setTimeout(() => {
+              // Устанавливаем высоту для каждого слайда
+              const slides = document.querySelectorAll('.slider-slide');
+              slides.forEach(slide => {
+                // Убираем все ограничения высоты
+                slide.style.height = 'auto';
+                slide.style.minHeight = 'auto';
+                slide.style.maxHeight = 'none';
+                slide.style.overflow = 'visible';
+              });
+              
+              // Измеряем и устанавливаем высоты
+              setTimeout(() => {
+                adjustSlideHeights();
+                goToSlide(0);
+              }, 100);
+            }, 100);
           }
         })
         .catch(error => {
@@ -1308,21 +1349,29 @@
           track.appendChild(errorSlide);
           totalSlides = track.querySelectorAll('.slider-slide').length;
           updateDots();
-          setTimeout(adjustSliderHeight, 500);
+          setTimeout(adjustSlideHeights, 300);
         });
     }
 
     // --- ИНИЦИАЛИЗАЦИЯ СЛАЙДЕРА ---
     window.addEventListener('load', () => {
       loadLadakData();
-      setTimeout(() => {
-        track.style.transform = `translateX(0%)`;
-      }, 100);
       
       let resizeTimer;
       window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(adjustSliderHeight, 200);
+        resizeTimer = setTimeout(() => {
+          adjustSlideHeights();
+          // Также подстраиваем высоту под текущий слайд
+          const activeSlide = document.querySelectorAll('.slider-slide')[currentSlide];
+          if (activeSlide) {
+            const height = activeSlide.scrollHeight;
+            if (height > 0) {
+              wrapper.style.height = (height + 40) + 'px';
+              wrapper.style.minHeight = (height + 40) + 'px';
+            }
+          }
+        }, 300);
       });
     });
 
@@ -1335,7 +1384,7 @@
     });
 
     // ============================================================
-    // 2. FLOATING BUTTON + MODAL FORM (ОБНОВЛЕНО)
+    // 2. FLOATING BUTTON + MODAL FORM
     // ============================================================
     
     const floatingBtn = document.getElementById('floatingBtn');
@@ -1374,7 +1423,6 @@
       }
     });
 
-    // --- Отправка формы в НОВУЮ таблицу через ВАШ скрипт ---
     addForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -1405,10 +1453,9 @@
       errorMsg.classList.remove('show');
 
       try {
-        // ВАШ НОВЫЙ URL скрипта
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwx2o-28ClRqVmno9gxv1i92LGXHHolu8ZE-YbCclDxMktoxk05zqFo4Uj5dWyKvyxt/exec';
         
-        const response = await fetch(scriptURL, {
+        await fetch(scriptURL, {
           method: 'POST',
           mode: 'no-cors',
           headers: {
@@ -1417,12 +1464,11 @@
           body: JSON.stringify(data)
         });
 
-        successMsg.textContent = 'Запись успешно добавлена в таблицу users!';
+        successMsg.textContent = 'Запись успешно добавлена!';
         successMsg.classList.add('show');
         errorMsg.classList.remove('show');
         addForm.reset();
         
-        // Обновляем данные на сайте через 2 секунды
         setTimeout(() => {
           loadLadakData();
         }, 2000);
