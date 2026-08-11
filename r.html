@@ -886,9 +886,9 @@
                 const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
-                // Если поле NAME
+                // Если поле NAME (маркер начала новой записи)
                 if (fieldName === 'NAME') {
-                  // Если текущая запись имеет данные (любые) - сохраняем
+                  // Сохраняем текущую запись, если она есть
                   if (hasData && hasAnyData(currentRecord)) {
                     records.push(currentRecord);
                   }
@@ -896,6 +896,7 @@
                   currentRecord = {};
                   hasData = false;
                   
+                  // Если NAME не пустой - добавляем
                   if (fieldValue && fieldValue.trim() !== '') {
                     currentRecord[fieldName] = fieldValue;
                     hasData = true;
@@ -903,7 +904,7 @@
                   continue;
                 }
                 
-                // Для остальных полей
+                // Для всех остальных полей - добавляем в текущую запись
                 if (fieldName && fieldValue && fieldValue.trim() !== '') {
                   currentRecord[fieldName] = fieldValue;
                   hasData = true;
@@ -914,6 +915,27 @@
             // Добавляем последнюю запись, если есть данные
             if (hasData && hasAnyData(currentRecord)) {
               records.push(currentRecord);
+            }
+            
+            // Если записей нет, но в секции есть данные - создаем одну запись со всеми полями
+            if (records.length === 0) {
+              // Проверяем, есть ли данные в секции
+              let hasAnyField = false;
+              const tempRecord = {};
+              for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+                const row = rows[rowIndex];
+                if (row && row.c) {
+                  const fieldName = row.c[0]?.v;
+                  const fieldValue = row.c[section.colIndex]?.v || '';
+                  if (fieldName && fieldValue && fieldValue.trim() !== '') {
+                    tempRecord[fieldName] = fieldValue;
+                    hasAnyField = true;
+                  }
+                }
+              }
+              if (hasAnyField) {
+                records.push(tempRecord);
+              }
             }
             
             const slideDiv = document.createElement('div');
