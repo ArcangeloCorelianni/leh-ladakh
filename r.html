@@ -827,15 +827,20 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // Получаем секции из первой строки
+          // Получаем секции из первой строки (игнорируем пустые)
           const sections = [];
           if (rows[0] && rows[0].c) {
             for (let col = 1; col < rows[0].c.length; col++) {
-              if (rows[0].c[col] && rows[0].c[col].v) {
-                sections.push({
-                  name: rows[0].c[col].v,
-                  colIndex: col
-                });
+              const cell = rows[0].c[col];
+              if (cell && cell.v) {
+                const name = cell.v.toString().trim();
+                // Игнорируем пустые названия
+                if (name && name.length > 0 && name !== 'undefined') {
+                  sections.push({
+                    name: name,
+                    colIndex: col
+                  });
+                }
               }
             }
           }
@@ -848,7 +853,20 @@
           
           // Для каждой секции создаем слайд
           sections.forEach((section) => {
-            // Собираем ВСЕ записи для этой секции
+            // Проверяем наличие данных в секции
+            let sectionHasData = false;
+            for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+              const row = rows[rowIndex];
+              if (row && row.c) {
+                const fieldValue = row.c[section.colIndex]?.v || '';
+                if (fieldValue && fieldValue.toString().trim() !== '') {
+                  sectionHasData = true;
+                  break;
+                }
+              }
+            }
+            
+            // Собираем записи
             const records = [];
             let currentRecord = {};
             let hasData = false;
@@ -882,19 +900,6 @@
             
             if (hasData && Object.keys(currentRecord).length > 0) {
               records.push(currentRecord);
-            }
-            
-            // Проверяем, есть ли вообще какие-то данные в этой секции
-            let sectionHasData = false;
-            for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
-              const row = rows[rowIndex];
-              if (row && row.c) {
-                const fieldValue = row.c[section.colIndex]?.v || '';
-                if (fieldValue && fieldValue.trim() !== '') {
-                  sectionHasData = true;
-                  break;
-                }
-              }
             }
             
             const slideDiv = document.createElement('div');
