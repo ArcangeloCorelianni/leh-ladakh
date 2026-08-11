@@ -933,7 +933,7 @@
 
   <script>
     // ============================================================
-    // 1. СЛАЙДЕР С БЕСКОНЕЧНОЙ КАРУСЕЛЬЮ (ПРОСТАЯ ЛОГИКА)
+    // 1. СЛАЙДЕР С БЕСКОНЕЧНОЙ КАРУСЕЛЬЮ (ИСПРАВЛЕН)
     // ============================================================
     const track = document.getElementById('sliderTrack');
     const wrapper = document.getElementById('sliderWrapper');
@@ -1080,7 +1080,6 @@
         });
         dotsContainer.appendChild(dot);
       }
-      // Активный будет установлен при первом переходе
     }
 
     function updateSectionButtons(sections) {
@@ -1306,22 +1305,23 @@
             lastClone.classList.add('slide-clone');
             track.appendChild(lastClone);
             
+            // Реальные слайды
+            realSlides.forEach(slide => track.appendChild(slide));
+            
             // Клон первого в конец
             const firstClone = realSlides[0].cloneNode(true);
             firstClone.classList.add('slide-clone');
-            track.insertBefore(firstClone, track.firstChild);
-            
-            // Реальные слайды
-            realSlides.forEach(slide => track.appendChild(slide));
+            track.appendChild(firstClone);
           }
           
           totalSlides = realSlides.length;
-          currentSlide = 1; // Начинаем с первого реального слайда
           
           if (totalSlides > 0) {
             createDots(totalSlides);
             updateSectionButtons(sections);
             
+            // Начинаем с первого реального слайда (индекс 1)
+            currentSlide = 1;
             track.style.transition = 'none';
             track.style.transform = `translateX(-100%)`;
             updateDots(1);
@@ -1343,7 +1343,9 @@
           track.appendChild(errorSlide);
           totalSlides = 1;
           createDots(1);
-          setTimeout(setWrapperHeight, 300);
+          setTimeout(() => {
+            setWrapperHeight(0);
+          }, 300);
         });
     }
 
