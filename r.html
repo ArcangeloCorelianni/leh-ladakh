@@ -747,14 +747,14 @@
       
       const allSlides = track.querySelectorAll('.slider-slide');
       
+      // Создаем кнопки ТОЛЬКО для существующих слайдов
       sections.forEach((section, index) => {
-        const slideIndex = index;
-        
-        if (slideIndex < allSlides.length) {
+        // Проверяем, что слайд с таким индексом существует
+        if (index < allSlides.length) {
           const btn = document.createElement('a');
           btn.href = '#';
           btn.className = 'admin-link-leh';
-          btn.setAttribute('onclick', `goToSectionSlide(${slideIndex}, event); return false;`);
+          btn.setAttribute('onclick', `goToSectionSlide(${index}, event); return false;`);
           btn.innerHTML = `
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
             ${section.name}
@@ -806,7 +806,7 @@
       return html;
     }
 
-    // --- ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ (ИСПРАВЛЕННАЯ) ---
+    // --- ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
       const sheetName = 'data';
@@ -825,7 +825,7 @@
               const cell = rows[0].c[col];
               if (cell && cell.v) {
                 const name = cell.v.toString().trim();
-                // Ключевое исправление: пропускаем пустые названия
+                // Пропускаем пустые названия
                 if (name && name.length > 0 && name !== 'undefined' && name !== '') {
                   sections.push({
                     name: name,
@@ -886,7 +886,6 @@
             
             // Если записей нет, но данные есть - создаем одну запись со всеми полями
             if (records.length === 0) {
-              // Проверяем, есть ли данные в секции
               let hasAnyData = false;
               const tempRecord = {};
               for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
