@@ -1007,22 +1007,20 @@
       
       // Находим все слайды LADAK (их порядок в треке)
       const allSlides = track.querySelectorAll('.slider-slide');
-      let ladakIndex = 0;
       
       sections.forEach((section) => {
         // Ищем соответствующий слайд по заголовку h2
         let slideIndex = -1;
         allSlides.forEach((slide, idx) => {
           const h2 = slide.querySelector('h2');
-          if (h2 && h2.textContent === section.name) {
+          if (h2 && h2.textContent.trim() === section.name.trim()) {
             slideIndex = idx;
           }
         });
         
         if (slideIndex === -1) {
-          // Если не нашли, считаем что слайды идут после 3-го
-          slideIndex = 3 + ladakIndex;
-          ladakIndex++;
+          // Если не нашли, используем индекс по порядку
+          slideIndex = allSlides.length - sections.length + sections.indexOf(section);
         }
         
         const btn = document.createElement('a');
@@ -1084,7 +1082,7 @@
       return html;
     }
 
-    // --- ЗАГРУЗКА ДАННЫХ ИЗ ТАБЛИЦЫ LADAK ---
+    // --- ЗАГРУЗКА ДАННЫХ ИЗ ТАБЛИЦЫ LADAK (исправленная) ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
       const sheetName = 'data';
@@ -1112,7 +1110,7 @@
           // Сохраняем секции для кнопок
           const sectionsData = sections;
           
-          // Удаляем старые слайды LADAK
+          // Удаляем ТОЛЬКО старые слайды LADAK (не все слайды!)
           const oldSlides = track.querySelectorAll('.slide-ladak');
           oldSlides.forEach(slide => slide.remove());
           
@@ -1226,7 +1224,7 @@
             track.appendChild(slideDiv);
           });
           
-          // Обновляем общее количество слайдов
+          // ОБНОВЛЯЕМ totalSlides ПОСЛЕ добавления всех слайдов
           totalSlides = track.querySelectorAll('.slider-slide').length;
           
           // Обновляем точки
@@ -1235,7 +1233,7 @@
           // Обновляем кнопки секций в шапке с правильными индексами
           updateSectionButtons(sectionsData);
           
-          // Возвращаем на первый слайд
+          // Возвращаем на первый слайд (видео)
           goToSlide(0);
           
         })
