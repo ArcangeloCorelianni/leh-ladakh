@@ -317,6 +317,33 @@
     .ladak-card a:hover {
       text-decoration: none;
     }
+    .ladak-card .social-icons-container {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .ladak-card .social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: white !important;
+      font-size: 1rem;
+    }
+    .ladak-card .social-link:hover {
+      transform: scale(1.15);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .ladak-card .social-link.social-whatsapp { background: #25D366; }
+    .ladak-card .social-link.social-telegram { background: #0088cc; }
+    .ladak-card .social-link.social-phone { background: #4A90E2; }
+    .ladak-card .social-link.social-website { background: #4A90E2; }
+    
     .ladak-card button {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -935,6 +962,47 @@
       });
     }
 
+    // --- ФУНКЦИЯ ДЛЯ СОЗДАНИЯ ИКОНОК КОНТАКТОВ ---
+    function createContactIcons(contactString) {
+      if (!contactString) return '';
+      
+      const parts = contactString.split('|').map(p => p.trim()).filter(p => p.length > 0);
+      if (parts.length === 0) return contactString;
+      
+      let html = '<span class="social-icons-container">';
+      
+      parts.forEach(contact => {
+        // Если это ссылка
+        if (contact.startsWith('http://') || contact.startsWith('https://')) {
+          const lower = contact.toLowerCase();
+          let socialClass = 'social-website';
+          let icon = 'fa-globe';
+          
+          if (lower.includes('wa.me') || lower.includes('whatsapp')) {
+            socialClass = 'social-whatsapp';
+            icon = 'fa-whatsapp';
+          } else if (lower.includes('t.me') || lower.includes('telegram')) {
+            socialClass = 'social-telegram';
+            icon = 'fa-telegram-plane';
+          }
+          
+          html += `<a href="${contact}" class="social-link ${socialClass}" target="_blank" rel="noopener noreferrer"><i class="fab ${icon}"></i></a>`;
+        }
+        // Если это телефон
+        else if (/^[\+\d\s\(\)-]{7,}$/.test(contact.replace(/\s/g, ''))) {
+          const tel = contact.replace(/[^0-9+]/g, '');
+          html += `<a href="tel:${tel}" class="social-link social-phone" target="_blank" rel="noopener noreferrer"><i class="fas fa-phone"></i></a>`;
+        }
+        // Обычный текст
+        else {
+          html += `<span style="margin-left:5px;padding:5px 8px;background:rgba(255,255,255,0.1);border-radius:20px;">${contact}</span>`;
+        }
+      });
+      
+      html += '</span>';
+      return html;
+    }
+
     // --- ЗАГРУЗКА ДАННЫХ ИЗ ТАБЛИЦЫ LADAK ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
@@ -1032,11 +1100,8 @@
                   hasRecordData = true;
                 }
                 if (record.CONTACT && record.CONTACT.trim() !== '') {
-                  const tel = record.CONTACT.replace(/[^0-9+]/g, '');
-                  html += `<div class="ladak-card" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">`;
-                  html += `<a href="tel:${tel}" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">📞 ${record.CONTACT}</a>`;
-                  html += `<a href="https://wa.me/${tel.replace(/^\+/, '')}" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:1.2rem;">💬</a>`;
-                  html += `<a href="https://t.me/${record.CONTACT.replace(/[^0-9]/g, '')}" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:1.2rem;">✈️</a>`;
+                  html += `<div class="ladak-card" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">`;
+                  html += `<span style="font-weight:bold;">📞</span> ${createContactIcons(record.CONTACT)}`;
                   html += `</div>`;
                   hasRecordData = true;
                 }
