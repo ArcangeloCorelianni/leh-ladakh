@@ -748,17 +748,16 @@
       const allSlides = track.querySelectorAll('.slider-slide');
       
       sections.forEach((section, index) => {
-        if (index < allSlides.length) {
-          const btn = document.createElement('a');
-          btn.href = '#';
-          btn.className = 'admin-link-leh';
-          btn.setAttribute('onclick', `goToSectionSlide(${index}, event); return false;`);
-          btn.innerHTML = `
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
-            ${section.name}
-          `;
-          container.appendChild(btn);
-        }
+        // Всегда создаем кнопку для каждой секции
+        const btn = document.createElement('a');
+        btn.href = '#';
+        btn.className = 'admin-link-leh';
+        btn.setAttribute('onclick', `goToSectionSlide(${index}, event); return false;`);
+        btn.innerHTML = `
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.963 7.57l-1.79 8.427c-.135.582-.485.726-1.008.452l-2.792-2.063-1.346 1.296c-.148.147-.271.271-.555.271l.2-2.869 5.217-4.71c.226-.2-.05-.312-.35-.112l-6.453 4.063-2.773-.865c-.602-.185-.613-.602.127-.89l10.843-4.18c.503-.185.944.112.783.883z"/></svg>
+          ${section.name}
+        `;
+        container.appendChild(btn);
       });
     }
 
@@ -837,8 +836,9 @@
           const oldSlides = track.querySelectorAll('.slider-slide');
           oldSlides.forEach(slide => slide.remove());
           
-          // --- 2. Для каждой секции создаем слайд ---
+          // --- 2. Для КАЖДОЙ секции создаем слайд (даже если нет данных) ---
           sections.forEach((section) => {
+            // Собираем данные для секции
             const records = [];
             let currentRecord = {};
             let hasData = false;
@@ -855,14 +855,12 @@
                   }
                   currentRecord = {};
                   hasData = false;
-                  
                   if (fieldValue && fieldValue.toString().trim() !== '') {
                     currentRecord['NAME'] = fieldValue.toString().trim();
                     hasData = true;
                   }
                   continue;
                 }
-                
                 if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
                   currentRecord[fieldName] = fieldValue.toString().trim();
                   hasData = true;
@@ -874,6 +872,7 @@
               records.push({...currentRecord});
             }
             
+            // Если нет записей с NAME, но данные есть - создаем одну запись
             if (records.length === 0) {
               let hasAnyData = false;
               const tempRecord = {};
@@ -893,6 +892,7 @@
               }
             }
             
+            // ВСЕГДА СОЗДАЕМ СЛАЙД
             const slideDiv = document.createElement('div');
             slideDiv.className = 'slider-slide slide-ladak';
             
@@ -904,7 +904,6 @@
             } else {
               records.forEach((record) => {
                 html += `<div class="ladak-record">`;
-                
                 let hasRecordData = false;
                 
                 if (record.NAME && record.NAME.trim() !== '') {
@@ -912,8 +911,7 @@
                   hasRecordData = true;
                 }
                 if (record.TEXT && record.TEXT.trim() !== '') {
-                  const textWithBreaks = record.TEXT.replace(/\n/g, '<br>');
-                  html += `<div class="ladak-card"><p>${textWithBreaks}</p></div>`;
+                  html += `<div class="ladak-card"><p>${record.TEXT.replace(/\n/g, '<br>')}</p></div>`;
                   hasRecordData = true;
                 }
                 if (record.FOTO && record.FOTO.trim() !== '') {
@@ -925,9 +923,7 @@
                   hasRecordData = true;
                 }
                 if (record.CONTACT && record.CONTACT.trim() !== '') {
-                  html += `<div class="ladak-card" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;">`;
-                  html += createContactIcons(record.CONTACT);
-                  html += `</div>`;
+                  html += `<div class="ladak-card" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;">${createContactIcons(record.CONTACT)}</div>`;
                   hasRecordData = true;
                 }
                 if (record.DATE && record.DATE.trim() !== '') {
@@ -953,11 +949,9 @@
                   html += `</div>`;
                   hasRecordData = true;
                 }
-                
                 if (!hasRecordData) {
                   html += `<p class="ladak-empty">Запись без данных</p>`;
                 }
-                
                 html += `</div>`;
               });
             }
@@ -967,6 +961,7 @@
             track.appendChild(slideDiv);
           });
           
+          // Обновляем слайдер
           totalSlides = track.querySelectorAll('.slider-slide').length;
           if (totalSlides > 0) {
             updateDots();
