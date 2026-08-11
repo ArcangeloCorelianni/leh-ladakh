@@ -272,33 +272,29 @@
       border-radius: 8px;
       padding: 15px 20px;
       margin-bottom: 15px;
-      border-left: 3px solid #00b2ff;
       text-align: left;
       width: 100%;
       box-sizing: border-box;
-    }
-    .ladak-card h3 {
-      color: #00b2ff;
-      margin: 0 0 8px 0;
-      font-size: 1.1rem;
+      /* Убрана синяя полоса слева */
     }
     .ladak-card h4 {
-      margin: 5px 0;
+      margin: 0;
       font-size: 1.05rem;
     }
     .ladak-card p {
-      margin: 8px 0;
+      margin: 0;
       font-size: 0.95rem;
       text-align: left;
     }
     .ladak-card img {
       max-width: 100%;
       border-radius: 6px;
-      margin: 8px 0;
+      margin: 0;
+      display: block;
     }
     .ladak-card a {
       display: inline-block;
-      margin: 8px 0;
+      margin: 0;
       color: #00b2ff;
       text-decoration: none;
       font-weight: bold;
@@ -969,7 +965,7 @@
             // Проверяем, есть ли хоть какие-то данные
             let hasData = false;
             
-            // Показываем только заполненные поля
+            // Показываем только заполненные поля (каждый элемент в отдельной карточке)
             if (fields.NAME && fields.NAME.trim() !== '') {
               html += `<div class="ladak-card"><h4>${fields.NAME}</h4></div>`;
               hasData = true;
