@@ -747,9 +747,7 @@
       
       const allSlides = track.querySelectorAll('.slider-slide');
       
-      // Создаем кнопки ТОЛЬКО для существующих слайдов
       sections.forEach((section, index) => {
-        // Проверяем, что слайд с таким индексом существует
         if (index < allSlides.length) {
           const btn = document.createElement('a');
           btn.href = '#';
@@ -825,7 +823,6 @@
               const cell = rows[0].c[col];
               if (cell && cell.v) {
                 const name = cell.v.toString().trim();
-                // Пропускаем пустые названия
                 if (name && name.length > 0 && name !== 'undefined' && name !== '') {
                   sections.push({
                     name: name,
@@ -842,25 +839,20 @@
           
           // --- 2. Для каждой секции создаем слайд ---
           sections.forEach((section) => {
-            // Собираем все записи (элементы) для этой секции
             const records = [];
             let currentRecord = {};
             let hasData = false;
             
-            // Проходим по строкам данных
             for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
               const row = rows[rowIndex];
               if (row && row.c) {
-                const fieldName = row.c[0]?.v; // NAME, TEXT, FOTO, etc.
+                const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
-                // Если встретили NAME - начинаем новую запись
                 if (fieldName === 'NAME') {
-                  // Сохраняем предыдущую запись
                   if (hasData && Object.keys(currentRecord).length > 0) {
                     records.push({...currentRecord});
                   }
-                  // Начинаем новую
                   currentRecord = {};
                   hasData = false;
                   
@@ -871,7 +863,6 @@
                   continue;
                 }
                 
-                // Добавляем остальные поля
                 if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
                   currentRecord[fieldName] = fieldValue.toString().trim();
                   hasData = true;
@@ -879,12 +870,10 @@
               }
             }
             
-            // Сохраняем последнюю запись
             if (hasData && Object.keys(currentRecord).length > 0) {
               records.push({...currentRecord});
             }
             
-            // Если записей нет, но данные есть - создаем одну запись со всеми полями
             if (records.length === 0) {
               let hasAnyData = false;
               const tempRecord = {};
@@ -904,7 +893,6 @@
               }
             }
             
-            // --- Создаем HTML слайда ---
             const slideDiv = document.createElement('div');
             slideDiv.className = 'slider-slide slide-ladak';
             
@@ -979,7 +967,6 @@
             track.appendChild(slideDiv);
           });
           
-          // Обновляем слайдер
           totalSlides = track.querySelectorAll('.slider-slide').length;
           if (totalSlides > 0) {
             updateDots();
