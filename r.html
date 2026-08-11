@@ -81,9 +81,9 @@
       border-radius: 8px;
       margin: 20px 0;
       background: rgba(0, 0, 0, 0.3);
-      height: auto;
-      min-height: 400px;
-      transition: height 0.4s ease;
+      height: auto !important;
+      min-height: 200px;
+      transition: height 0.5s ease;
     }
 
     .slider-track {
@@ -102,9 +102,10 @@
       align-items: center;
       justify-content: flex-start;
       padding: 20px 30px;
-      height: 100%;
+      height: auto !important;
+      min-height: 100%;
       width: 100%;
-      overflow: hidden;
+      overflow: visible !important;
       text-align: center;
     }
 
@@ -114,7 +115,7 @@
       padding-bottom: 5px;
       width: 100%;
       max-width: 100%;
-      height: 100%;
+      height: auto !important;
       min-height: auto;
     }
     .slide-ladak h2 {
@@ -163,12 +164,12 @@
       font-size: 0.95rem;
       text-align: left;
       white-space: pre-line;
-      max-height: none;
-      overflow: visible;
+      max-height: none !important;
+      overflow: visible !important;
     }
     .ladak-card img {
       max-width: 100%;
-      max-height: 250px;
+      max-height: 300px;
       border-radius: 6px;
       margin: 0;
       display: block;
@@ -366,7 +367,7 @@
         height: 12px !important;
       }
       .ladak-card img {
-        max-height: 180px;
+        max-height: 200px;
       }
     }
 
@@ -664,31 +665,45 @@
       const slides = document.querySelectorAll('.slider-slide');
       let maxHeight = 0;
       
-      // Временно показываем все слайды для измерения
+      // Временно показываем все слайды и измеряем их высоту
       slides.forEach(slide => {
+        // Сохраняем текущие стили
+        const originalDisplay = slide.style.display;
+        const originalPosition = slide.style.position;
+        const originalOpacity = slide.style.opacity;
+        const originalPointerEvents = slide.style.pointerEvents;
+        
+        // Делаем слайд видимым для измерения
         slide.style.display = 'block';
         slide.style.position = 'absolute';
         slide.style.opacity = '0';
         slide.style.pointerEvents = 'none';
+        slide.style.height = 'auto';
+        slide.style.minHeight = 'auto';
+        slide.style.overflow = 'visible';
+        
+        // Измеряем высоту
         const height = slide.scrollHeight;
         if (height > maxHeight) maxHeight = height;
-        slide.style.position = '';
-        slide.style.opacity = '';
-        slide.style.pointerEvents = '';
-        slide.style.display = '';
+        
+        // Восстанавливаем стили
+        slide.style.display = originalDisplay;
+        slide.style.position = originalPosition;
+        slide.style.opacity = originalOpacity;
+        slide.style.pointerEvents = originalPointerEvents;
+        slide.style.height = '';
+        slide.style.minHeight = '';
+        slide.style.overflow = '';
       });
       
       // Добавляем отступы для паддингов
-      maxHeight += 60;
+      maxHeight += 80;
       
-      if (maxHeight > 0 && maxHeight < 800) {
+      // Устанавливаем высоту контейнера
+      if (maxHeight > 0) {
         wrapper.style.height = maxHeight + 'px';
-      } else if (maxHeight >= 800) {
-        wrapper.style.height = '800px';
-        // Если контент очень большой, добавляем прокрутку
-        document.querySelectorAll('.slider-slide').forEach(slide => {
-          slide.style.overflowY = 'auto';
-        });
+        wrapper.style.minHeight = maxHeight + 'px';
+        wrapper.style.maxHeight = 'none';
       }
     }
 
@@ -711,7 +726,7 @@
       setTimeout(() => {
         adjustSliderHeight();
         isTransitioning = false;
-      }, 500);
+      }, 550);
     }
 
     function nextSlide() {
@@ -1009,7 +1024,7 @@
             goToSlide(0);
             
             // Подстраиваем высоту после загрузки
-            setTimeout(adjustSliderHeight, 400);
+            setTimeout(adjustSliderHeight, 500);
           }
         })
         .catch(error => {
@@ -1023,7 +1038,7 @@
           track.appendChild(errorSlide);
           totalSlides = track.querySelectorAll('.slider-slide').length;
           updateDots();
-          setTimeout(adjustSliderHeight, 400);
+          setTimeout(adjustSliderHeight, 500);
         });
     }
 
@@ -1042,12 +1057,12 @@
       });
     });
 
-    // --- ТОЛЬКО КНОПКИ ДЛЯ НАВИГАЦИИ (БЕЗ СВАЙПА) ---
+    // --- ТОЛЬКО КНОПКИ ДЛЯ НАВИГАЦИИ ---
     prevBtn.addEventListener('click', prevSlide);
     nextBtn.addEventListener('click', nextSlide);
 
     // --- УБИРАЕМ СВАЙП ПАЛЬЦЕМ ---
-    // (просто не добавляем обработчики touch)
+    // Обработчики touch не добавляются
 
     document.addEventListener('keydown', function(e) {
       if (e.key === 'ArrowLeft') prevSlide();
