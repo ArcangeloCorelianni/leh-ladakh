@@ -875,7 +875,7 @@
               }
             }
             
-            // Собираем записи
+            // Собираем записи (исправленная логика)
             const records = [];
             let currentRecord = {};
             let hasData = false;
@@ -886,17 +886,16 @@
                 const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
-                // Если поле NAME - маркер начала новой записи
+                // Если поле NAME
                 if (fieldName === 'NAME') {
-                  // Сохраняем предыдущую запись, если в ней есть данные
-                  if (hasData && Object.keys(currentRecord).length > 0 && hasAnyData(currentRecord)) {
+                  // Если текущая запись имеет данные (любые) - сохраняем
+                  if (hasData && hasAnyData(currentRecord)) {
                     records.push(currentRecord);
                   }
                   // Начинаем новую запись
                   currentRecord = {};
                   hasData = false;
                   
-                  // Если NAME заполнено - добавляем
                   if (fieldValue && fieldValue.trim() !== '') {
                     currentRecord[fieldName] = fieldValue;
                     hasData = true;
@@ -904,7 +903,7 @@
                   continue;
                 }
                 
-                // Для остальных полей - добавляем в текущую запись
+                // Для остальных полей
                 if (fieldName && fieldValue && fieldValue.trim() !== '') {
                   currentRecord[fieldName] = fieldValue;
                   hasData = true;
@@ -912,8 +911,8 @@
               }
             }
             
-            // Добавляем последнюю запись
-            if (hasData && Object.keys(currentRecord).length > 0 && hasAnyData(currentRecord)) {
+            // Добавляем последнюю запись, если есть данные
+            if (hasData && hasAnyData(currentRecord)) {
               records.push(currentRecord);
             }
             
