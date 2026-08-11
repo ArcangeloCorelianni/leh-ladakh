@@ -281,7 +281,7 @@
       transform: scale(1.05);
     }
     
-    /* --- SLIDER STYLES (ПОЛНОСТЬЮ ПЕРЕРАБОТАНЫ) --- */
+    /* --- SLIDER STYLES --- */
     .slider-wrapper {
       position: relative;
       overflow: hidden;
@@ -933,7 +933,7 @@
 
   <script>
     // ============================================================
-    // 1. СЛАЙДЕР С ДИНАМИЧЕСКОЙ ВЫСОТОЙ
+    // 1. СЛАЙДЕР С БЕСКОНЕЧНОЙ ПРОКРУТКОЙ
     // ============================================================
     const track = document.getElementById('sliderTrack');
     const wrapper = document.getElementById('sliderWrapper');
@@ -945,16 +945,14 @@
     const nextBtn = document.getElementById('sliderNext');
     const dotsContainer = document.getElementById('sliderDots');
 
-    // --- Главная функция: устанавливает высоту контейнера под текущий слайд ---
+    // --- Установка высоты контейнера под текущий слайд ---
     function setWrapperHeightToCurrentSlide() {
       const slides = document.querySelectorAll('.slider-slide');
       if (slides.length === 0) return;
       
-      // Получаем текущий активный слайд
       const activeSlide = slides[currentSlide];
       if (!activeSlide) return;
       
-      // Временно делаем слайд видимым для измерения
       const originalDisplay = activeSlide.style.display;
       const originalPosition = activeSlide.style.position;
       const originalOpacity = activeSlide.style.opacity;
@@ -968,10 +966,8 @@
       activeSlide.style.minHeight = 'auto';
       activeSlide.style.overflow = 'visible';
       
-      // Измеряем реальную высоту содержимого
       const height = activeSlide.scrollHeight;
       
-      // Восстанавливаем стили
       activeSlide.style.display = originalDisplay;
       activeSlide.style.position = originalPosition;
       activeSlide.style.opacity = originalOpacity;
@@ -980,9 +976,8 @@
       activeSlide.style.minHeight = '';
       activeSlide.style.overflow = '';
       
-      // Устанавливаем высоту контейнера
       if (height > 0) {
-        const newHeight = height + 30; // небольшой запас
+        const newHeight = height + 30;
         wrapper.style.height = newHeight + 'px';
         wrapper.style.minHeight = newHeight + 'px';
       } else {
@@ -991,10 +986,12 @@
       }
     }
 
-    // --- Переход к слайду ---
+    // --- Бесконечная прокрутка: переход к слайду ---
     function goToSlide(index) {
       if (isTransitioning || index === currentSlide) return;
       if (totalSlides === 0) return;
+      
+      // Бесконечная прокрутка: если индекс выходит за пределы, зацикливаем
       if (index < 0) index = totalSlides - 1;
       if (index >= totalSlides) index = 0;
       
@@ -1007,7 +1004,6 @@
         dot.classList.toggle('active', i === currentSlide);
       });
       
-      // После завершения анимации пересчитываем высоту
       setTimeout(() => {
         setWrapperHeightToCurrentSlide();
         isTransitioning = false;
@@ -1302,9 +1298,7 @@
             updateDots();
             updateSectionButtons(sections);
             
-            // Даем время на рендеринг, затем показываем первый слайд с правильной высотой
             setTimeout(() => {
-              // Убираем все ограничения высоты у слайдов
               document.querySelectorAll('.slider-slide').forEach(slide => {
                 slide.style.height = 'auto';
                 slide.style.minHeight = 'auto';
@@ -1312,10 +1306,7 @@
                 slide.style.overflow = 'visible';
               });
               
-              // Показываем первый слайд
               goToSlide(0);
-              
-              // Дополнительно подстраиваем высоту после загрузки
               setTimeout(setWrapperHeightToCurrentSlide, 300);
             }, 150);
           }
@@ -1339,7 +1330,6 @@
     window.addEventListener('load', () => {
       loadLadakData();
       
-      // При изменении размера окна пересчитываем высоту
       let resizeTimer;
       window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
