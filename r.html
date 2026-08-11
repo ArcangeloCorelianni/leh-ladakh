@@ -974,14 +974,18 @@
       document.body.style.overflow = 'hidden';
     }
 
-    // --- ОБНОВЛЕНИЕ ТОЧЕК ---
+    // --- ОБНОВЛЕНИЕ ТОЧЕК (исправленное) ---
     function updateDots() {
+      // Удаляем старые точки (кроме первых трех)
       const existingDots = dotsContainer.querySelectorAll('.slider-dot');
       for (let i = 3; i < existingDots.length; i++) {
         existingDots[i].remove();
       }
       
+      // Получаем актуальное количество слайдов
       const total = track.querySelectorAll('.slider-slide').length;
+      
+      // Добавляем новые точки только для слайдов, которые есть
       for (let i = 3; i < total; i++) {
         const dot = document.createElement('button');
         dot.className = 'slider-dot';
@@ -994,6 +998,7 @@
         dotsContainer.appendChild(dot);
       }
       
+      // Обновляем активную точку
       const allDots = dotsContainer.querySelectorAll('.slider-dot');
       allDots.forEach((dot, i) => {
         dot.classList.toggle('active', i === currentSlide);
@@ -1102,9 +1107,12 @@
           // Сохраняем секции для кнопок
           const sectionsData = sections;
           
-          // Удаляем ТОЛЬКО старые слайды LADAK (не все слайды!)
+          // Удаляем ТОЛЬКО старые слайды LADAK
           const oldSlides = track.querySelectorAll('.slide-ladak');
           oldSlides.forEach(slide => slide.remove());
+          
+          // Проверяем, что остались только 3 первых слайда
+          console.log('Слайдов после удаления:', track.querySelectorAll('.slider-slide').length);
           
           // Для каждой секции создаем слайд
           sections.forEach((section) => {
