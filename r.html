@@ -81,16 +81,16 @@
       border-radius: 8px;
       margin: 20px 0;
       background: rgba(0, 0, 0, 0.3);
-      height: 500px;
-      min-height: 400px;
-      transition: height 0.3s ease;
+      height: auto;
+      min-height: 300px;
+      transition: height 0.4s ease;
     }
 
     .slider-track {
       display: flex;
       transition: transform 0.5s ease;
       will-change: transform;
-      align-items: flex-start;
+      align-items: stretch;
       height: 100%;
     }
 
@@ -104,17 +104,8 @@
       padding: 20px 30px;
       height: 100%;
       width: 100%;
-      overflow-y: auto;
+      overflow: hidden;
       text-align: center;
-    }
-
-    .slider-slide::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .slider-slide::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 4px;
     }
 
     /* Slide: LADAK Data */
@@ -172,13 +163,17 @@
       font-size: 0.95rem;
       text-align: left;
       white-space: pre-line;
+      max-height: 200px;
+      overflow: hidden;
     }
     .ladak-card img {
       max-width: 100%;
+      max-height: 200px;
       border-radius: 6px;
       margin: 0;
       display: block;
       cursor: pointer;
+      object-fit: contain;
     }
     .ladak-card a {
       display: inline-flex;
@@ -344,6 +339,8 @@
       .slider-slide {
         padding-top: 5px !important;
         padding-bottom: 5px !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
       }
       .slider-arrow {
         width: 30px;
@@ -367,6 +364,12 @@
       .ladak-card .social-link svg {
         width: 12px !important;
         height: 12px !important;
+      }
+      .ladak-card p {
+        max-height: 150px;
+      }
+      .ladak-card img {
+        max-height: 150px;
       }
     }
 
@@ -650,6 +653,7 @@
   <script>
     // --- ОСНОВНАЯ ЛОГИКА СЛАЙДЕРА ---
     const track = document.getElementById('sliderTrack');
+    const wrapper = document.getElementById('sliderWrapper');
     let totalSlides = 0;
     let currentSlide = 0;
     let isTransitioning = false;
@@ -657,6 +661,33 @@
     const prevBtn = document.getElementById('sliderPrev');
     const nextBtn = document.getElementById('sliderNext');
     const dotsContainer = document.getElementById('sliderDots');
+
+    // Функция для автоматической подстройки высоты слайдера
+    function adjustSliderHeight() {
+      const slides = document.querySelectorAll('.slider-slide');
+      let maxHeight = 0;
+      
+      // Временно показываем все слайды для измерения
+      slides.forEach(slide => {
+        slide.style.display = 'block';
+        slide.style.position = 'absolute';
+        slide.style.opacity = '0';
+        slide.style.pointerEvents = 'none';
+        const height = slide.scrollHeight;
+        if (height > maxHeight) maxHeight = height;
+        slide.style.position = '';
+        slide.style.opacity = '';
+        slide.style.pointerEvents = '';
+        slide.style.display = '';
+      });
+      
+      // Добавляем отступы для паддингов
+      maxHeight += 40;
+      
+      if (maxHeight > 0) {
+        wrapper.style.height = maxHeight + 'px';
+      }
+    }
 
     function goToSlide(index) {
       if (isTransitioning || index === currentSlide) return;
@@ -673,7 +704,9 @@
         dot.classList.toggle('active', i === currentSlide);
       });
       
+      // Подстраиваем высоту после перехода
       setTimeout(() => {
+        adjustSliderHeight();
         isTransitioning = false;
       }, 500);
     }
@@ -808,7 +841,7 @@
       return html;
     }
 
-    // --- ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ (ИСПРАВЛЕНА) ---
+    // --- ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
       const sheetName = 'data';
@@ -820,10 +853,9 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // --- 1. Находим все непустые секции в ПЕРВОЙ СТРОКЕ (начиная с 0-го столбца) ---
+          // --- 1. Находим все непустые секции в ПЕРВОЙ СТРОКЕ ---
           const sections = [];
           if (rows[0] && rows[0].c) {
-            // Начинаем с самого ПЕРВОГО столбца (индекс 0)
             for (let col = 0; col < rows[0].c.length; col++) {
               const cell = rows[0].c[col];
               if (cell && cell.v) {
@@ -844,7 +876,6 @@
           
           // --- 2. Для КАЖДОЙ секции создаем слайд ---
           sections.forEach((section) => {
-            // Собираем данные для секции
             const records = [];
             let currentRecord = {};
             let hasData = false;
@@ -855,9 +886,7 @@
                 const fieldName = row.c[0]?.v;
                 const fieldValue = row.c[section.colIndex]?.v || '';
                 
-                // Если это NAME — начинаем новую запись
                 if (fieldName === 'NAME') {
-                  // Сохраняем предыдущую запись, если она есть
                   if (hasData && Object.keys(currentRecord).length > 0) {
                     records.push({...currentRecord});
                   }
@@ -871,7 +900,6 @@
                   continue;
                 }
                 
-                // Если это другие поля — добавляем к текущей записи
                 if (fieldName && fieldValue && fieldValue.toString().trim() !== '') {
                   currentRecord[fieldName] = fieldValue.toString().trim();
                   hasData = true;
@@ -879,12 +907,10 @@
               }
             }
             
-            // Сохраняем последнюю запись
             if (hasData && Object.keys(currentRecord).length > 0) {
               records.push({...currentRecord});
             }
             
-            // Если нет записей с NAME, но данные есть - создаем одну запись
             if (records.length === 0) {
               let hasAnyData = false;
               const tempRecord = {};
@@ -904,7 +930,6 @@
               }
             }
             
-            // ВСЕГДА СОЗДАЕМ СЛАЙД (даже если данных нет)
             const slideDiv = document.createElement('div');
             slideDiv.className = 'slider-slide slide-ladak';
             
@@ -979,6 +1004,9 @@
             updateDots();
             updateSectionButtons(sections);
             goToSlide(0);
+            
+            // Подстраиваем высоту после загрузки
+            setTimeout(adjustSliderHeight, 300);
           }
         })
         .catch(error => {
@@ -992,6 +1020,7 @@
           track.appendChild(errorSlide);
           totalSlides = track.querySelectorAll('.slider-slide').length;
           updateDots();
+          setTimeout(adjustSliderHeight, 300);
         });
     }
 
@@ -1001,6 +1030,13 @@
       setTimeout(() => {
         track.style.transform = `translateX(0%)`;
       }, 100);
+      
+      // Подстраиваем высоту при изменении размера окна
+      let resizeTimer;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(adjustSliderHeight, 200);
+      });
     });
 
     prevBtn.addEventListener('click', prevSlide);
@@ -1013,7 +1049,6 @@
 
     let touchStartX = 0;
     let touchEndX = 0;
-    const wrapper = document.getElementById('sliderWrapper');
 
     wrapper.addEventListener('touchstart', function(e) {
       touchStartX = e.changedTouches[0].screenX;
