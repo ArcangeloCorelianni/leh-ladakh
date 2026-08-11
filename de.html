@@ -295,7 +295,7 @@
 
     .slider-track {
       display: flex;
-      transition: transform 0.4s ease;
+      transition: transform 0.5s ease;
       will-change: transform;
       align-items: flex-start;
       height: auto !important;
@@ -933,13 +933,14 @@
 
   <script>
     // ============================================================
-    // 1. СЛАЙДЕР С БЕСКОНЕЧНОЙ ПРОКРУТКОЙ
+    // 1. СЛАЙДЕР С БЕСКОНЕЧНОЙ КАРУСЕЛЬЮ (БЕЗ ПЕРЕМОТКИ)
     // ============================================================
     const track = document.getElementById('sliderTrack');
     const wrapper = document.getElementById('sliderWrapper');
     let totalSlides = 0;
     let currentSlide = 0;
     let isTransitioning = false;
+    let slidesData = [];
 
     const prevBtn = document.getElementById('sliderPrev');
     const nextBtn = document.getElementById('sliderNext');
@@ -950,7 +951,12 @@
       const slides = document.querySelectorAll('.slider-slide');
       if (slides.length === 0) return;
       
-      const activeSlide = slides[currentSlide];
+      // Находим реальный индекс (без учета клонов)
+      let realIndex = currentSlide;
+      if (realIndex >= totalSlides) realIndex = realIndex - totalSlides;
+      if (realIndex < 0) realIndex = 0;
+      
+      const activeSlide = slides[realIndex];
       if (!activeSlide) return;
       
       const originalDisplay = activeSlide.style.display;
@@ -986,42 +992,133 @@
       }
     }
 
-    // --- Бесконечная прокрутка: переход к слайду ---
-    function goToSlide(index) {
-      if (isTransitioning || index === currentSlide) return;
+    // --- Обновление точек ---
+    function updateDots(activeIndex) {
+      const existingDots = dotsContainer.querySelectorAll('.slider-dot');
+      existingDots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === activeIndex);
+      });
+    }
+
+    // --- Переход к слайду ---
+    function goToSlide(index, instant = false) {
+      if (isTransitioning) return;
       if (totalSlides === 0) return;
       
-      // Бесконечная прокрутка: если индекс выходит за пределы, зацикливаем
-      if (index < 0) index = totalSlides - 1;
-      if (index >= totalSlides) index = 0;
+      // Определяем реальный индекс для точек
+      let dotIndex = index;
+      if (dotIndex >= totalSlides) dotIndex = 0;
+      if (dotIndex < 0) dotIndex = totalSlides - 1;
       
-      isTransitioning = true;
-      currentSlide = index;
-      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      // Бесконечная прокрутка: добавляем клоны
+      const slides = document.querySelectorAll('.slider-slide');
+      const totalWithClones = slides.length;
       
-      const allDots = dotsContainer.querySelectorAll('.slider-dot');
-      allDots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === currentSlide);
-      });
+      if (index < 0) {
+        // Переход на последний реальный слайд через клон
+        index = totalSlides;
+        setTimeout(() => {
+          track.style.transition = 'none';
+          track.style.transform = `translateX(-${totalSlides * 100}%)`;
+          currentSlide = totalSlides - 1;
+          setTimeout(() => {
+            track.style.transition = 'transform 0.5s ease';
+            isTransitioning = false;
+          }, 50);
+        }, 500);
+      } else if (index >= totalSlides) {
+        // Переход на первый реальный слайд через клон
+        index = 0;
+        setTimeout(() => {
+          track.style.transition = 'none';
+          track.style.transform = `translateX(0%)`;
+          currentSlide = 0;
+          setTimeout(() => {
+            track.style.transition = 'transform 0.5s ease';
+            isTransitioning = false;
+          }, 50);
+        }, 500);
+      }
       
-      setTimeout(() => {
-        setWrapperHeightToCurrentSlide();
-        isTransitioning = false;
-      }, 450);
+      // Если это обычный переход
+      if (index < totalSlides && index >= 0) {
+        isTransitioning = true;
+        currentSlide = index;
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        updateDots(currentSlide);
+        
+        setTimeout(() => {
+          setWrapperHeightToCurrentSlide();
+          isTransitioning = false;
+        }, 500);
+      }
+      
+      // Если переход на клон
+      if (index === totalSlides) {
+        isTransitioning = true;
+        currentSlide = index;
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        updateDots(0);
+        
+        setTimeout(() => {
+          setWrapperHeightToCurrentSlide();
+        }, 500);
+      }
+      
+      if (index === -1) {
+        isTransitioning = true;
+        currentSlide = -1;
+        track.style.transform = `translateX(${100}%)`;
+        updateDots(totalSlides - 1);
+        
+        setTimeout(() => {
+          setWrapperHeightToCurrentSlide();
+        }, 500);
+      }
     }
 
     function nextSlide() {
-      if (totalSlides > 0) goToSlide(currentSlide + 1);
+      if (totalSlides > 0) {
+        const nextIndex = currentSlide + 1;
+        if (nextIndex >= totalSlides) {
+          // Переход на клон первого слайда
+          goToSlide(totalSlides);
+        } else {
+          goToSlide(nextIndex);
+        }
+      }
     }
 
     function prevSlide() {
-      if (totalSlides > 0) goToSlide(currentSlide - 1);
+      if (totalSlides > 0) {
+        const prevIndex = currentSlide - 1;
+        if (prevIndex < 0) {
+          // Переход на клон последнего слайда
+          goToSlide(-1);
+        } else {
+          goToSlide(prevIndex);
+        }
+      }
     }
 
     function goToSectionSlide(index, event) {
       if (event) event.preventDefault();
-      if (totalSlides > 0) {
-        goToSlide(index);
+      if (totalSlides > 0 && index >= 0 && index < totalSlides) {
+        if (currentSlide === index) return;
+        // Если текущий слайд - клон, сначала переходим на реальный
+        if (currentSlide >= totalSlides) {
+          goToSlide(0);
+          setTimeout(() => {
+            goToSlide(index);
+          }, 600);
+        } else if (currentSlide < 0) {
+          goToSlide(totalSlides - 1);
+          setTimeout(() => {
+            goToSlide(index);
+          }, 600);
+        } else {
+          goToSlide(index);
+        }
         document.getElementById('sliderWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
@@ -1050,41 +1147,33 @@
       document.body.style.overflow = 'hidden';
     }
 
-    function updateDots() {
+    function createDots(count) {
       const existingDots = dotsContainer.querySelectorAll('.slider-dot');
       existingDots.forEach(dot => dot.remove());
       
-      const total = track.querySelectorAll('.slider-slide').length;
-      totalSlides = total;
+      if (count === 0) return;
       
-      if (total === 0) return;
-      
-      for (let i = 0; i < total; i++) {
+      for (let i = 0; i < count; i++) {
         const dot = document.createElement('button');
         dot.className = 'slider-dot';
         dot.dataset.index = i;
         dot.setAttribute('aria-label', `Слайд ${i+1}`);
         dot.addEventListener('click', function() {
           const index = parseInt(this.dataset.index);
-          goToSlide(index);
+          goToSectionSlide(index, null);
         });
         dotsContainer.appendChild(dot);
       }
       
-      const allDots = dotsContainer.querySelectorAll('.slider-dot');
-      allDots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === currentSlide);
-      });
+      updateDots(0);
     }
 
     function updateSectionButtons(sections) {
       const container = document.getElementById('sectionButtons');
       container.innerHTML = '';
       
-      const allSlides = track.querySelectorAll('.slider-slide');
-      
       sections.forEach((section, index) => {
-        if (index < allSlides.length) {
+        if (index < sections.length) {
           const btn = document.createElement('a');
           btn.href = '#';
           btn.className = 'admin-link-leh';
@@ -1169,6 +1258,9 @@
           
           const oldSlides = track.querySelectorAll('.slider-slide');
           oldSlides.forEach(slide => slide.remove());
+          
+          // Сохраняем реальные слайды
+          const realSlides = [];
           
           sections.forEach((section) => {
             const records = [];
@@ -1290,25 +1382,41 @@
             
             html += `</div>`;
             slideDiv.innerHTML = html;
-            track.appendChild(slideDiv);
+            realSlides.push(slideDiv);
           });
           
-          totalSlides = track.querySelectorAll('.slider-slide').length;
+          // Добавляем реальные слайды
+          realSlides.forEach(slide => track.appendChild(slide));
+          
+          // Создаем клоны для бесконечной прокрутки
+          // Клон первого слайда в конец
+          if (realSlides.length > 0) {
+            const firstClone = realSlides[0].cloneNode(true);
+            firstClone.classList.add('slide-clone');
+            track.appendChild(firstClone);
+            
+            // Клон последнего слайда в начало
+            const lastClone = realSlides[realSlides.length - 1].cloneNode(true);
+            lastClone.classList.add('slide-clone');
+            track.insertBefore(lastClone, track.firstChild);
+          }
+          
+          totalSlides = realSlides.length;
+          currentSlide = 0;
+          
           if (totalSlides > 0) {
-            updateDots();
+            createDots(totalSlides);
             updateSectionButtons(sections);
             
+            // Начинаем с первого слайда (сдвинуты на один из-за клона)
+            track.style.transition = 'none';
+            track.style.transform = `translateX(-100%)`;
+            currentSlide = 0;
+            
             setTimeout(() => {
-              document.querySelectorAll('.slider-slide').forEach(slide => {
-                slide.style.height = 'auto';
-                slide.style.minHeight = 'auto';
-                slide.style.maxHeight = 'none';
-                slide.style.overflow = 'visible';
-              });
-              
-              goToSlide(0);
-              setTimeout(setWrapperHeightToCurrentSlide, 300);
-            }, 150);
+              track.style.transition = 'transform 0.5s ease';
+              setWrapperHeightToCurrentSlide();
+            }, 100);
           }
         })
         .catch(error => {
@@ -1320,8 +1428,8 @@
             <p class="ladak-empty">⚠️ Не удалось загрузить данные. Проверьте подключение к интернету.</p>
           `;
           track.appendChild(errorSlide);
-          totalSlides = track.querySelectorAll('.slider-slide').length;
-          updateDots();
+          totalSlides = 1;
+          createDots(1);
           setTimeout(setWrapperHeightToCurrentSlide, 300);
         });
     }
@@ -1337,12 +1445,96 @@
       });
     });
 
-    prevBtn.addEventListener('click', prevSlide);
-    nextBtn.addEventListener('click', nextSlide);
+    // --- Обработка переходов с клонами ---
+    function handleTransitionEnd() {
+      const slides = document.querySelectorAll('.slider-slide');
+      const totalReal = totalSlides;
+      
+      // Проверяем, не на клоне ли мы
+      const currentTransform = track.style.transform;
+      const match = currentTransform.match(/translateX\(-([\d.]+)%\)/);
+      if (match) {
+        const position = parseFloat(match[1]);
+        const currentIndex = Math.round(position / 100);
+        
+        // Если на клоне первого (в конце)
+        if (currentIndex === totalReal + 1) {
+          track.style.transition = 'none';
+          track.style.transform = `translateX(-100%)`;
+          currentSlide = 0;
+          updateDots(0);
+          setTimeout(() => {
+            track.style.transition = 'transform 0.5s ease';
+          }, 50);
+        }
+        // Если на клоне последнего (в начале)
+        else if (currentIndex === 0) {
+          track.style.transition = 'none';
+          track.style.transform = `translateX(-${totalReal * 100}%)`;
+          currentSlide = totalReal - 1;
+          updateDots(totalReal - 1);
+          setTimeout(() => {
+            track.style.transition = 'transform 0.5s ease';
+          }, 50);
+        }
+        // Реальный слайд
+        else if (currentIndex >= 1 && currentIndex <= totalReal) {
+          currentSlide = currentIndex - 1;
+          updateDots(currentSlide);
+        }
+      }
+    }
+
+    track.addEventListener('transitionend', handleTransitionEnd);
+
+    prevBtn.addEventListener('click', function() {
+      if (totalSlides > 0) {
+        const currentTransform = track.style.transform;
+        const match = currentTransform.match(/translateX\(-([\d.]+)%\)/);
+        if (match) {
+          const position = parseFloat(match[1]);
+          const currentIndex = Math.round(position / 100);
+          
+          if (currentIndex <= 1) {
+            // Переход на клон последнего
+            track.style.transition = 'transform 0.5s ease';
+            track.style.transform = `translateX(0%)`;
+            updateDots(totalSlides - 1);
+          } else {
+            track.style.transition = 'transform 0.5s ease';
+            track.style.transform = `translateX(-${(currentIndex - 1) * 100}%)`;
+            updateDots(currentIndex - 2);
+          }
+        }
+      }
+    });
+
+    nextBtn.addEventListener('click', function() {
+      if (totalSlides > 0) {
+        const currentTransform = track.style.transform;
+        const match = currentTransform.match(/translateX\(-([\d.]+)%\)/);
+        if (match) {
+          const position = parseFloat(match[1]);
+          const currentIndex = Math.round(position / 100);
+          const totalWithClones = totalSlides + 2;
+          
+          if (currentIndex >= totalSlides) {
+            // Переход на клон первого
+            track.style.transition = 'transform 0.5s ease';
+            track.style.transform = `translateX(-${(totalSlides + 1) * 100}%)`;
+            updateDots(0);
+          } else {
+            track.style.transition = 'transform 0.5s ease';
+            track.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
+            updateDots(currentIndex);
+          }
+        }
+      }
+    });
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft') prevSlide();
-      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevBtn.click();
+      if (e.key === 'ArrowRight') nextBtn.click();
     });
 
     // ============================================================
