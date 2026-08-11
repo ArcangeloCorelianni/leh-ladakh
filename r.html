@@ -804,7 +804,7 @@
       return html;
     }
 
-    // --- ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ (НАЧИНАЕТ С ПЕРВОЙ НЕПУСТОЙ КОЛОНКИ) ---
+    // --- ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ ---
     function loadLadakData() {
       const spreadsheetId = '1emCk0RzPy3yPn-aK5uQfGtSdl5eVSHXYYYNXFddnpGw';
       const sheetName = 'data';
@@ -816,27 +816,14 @@
           const jsonData = JSON.parse(data.substring(47).slice(0, -2));
           const rows = jsonData.table.rows;
           
-          // --- 1. Находим первую непустую колонку и собираем секции ---
+          // --- 1. Собираем ТОЛЬКО непустые секции (пропускаем пустые колонки) ---
           const sections = [];
           if (rows[0] && rows[0].c) {
-            let startCol = 1;
-            // Находим первую колонку с названием секции
             for (let col = 1; col < rows[0].c.length; col++) {
               const cell = rows[0].c[col];
               if (cell && cell.v) {
                 const name = cell.v.toString().trim();
-                if (name && name.length > 0 && name !== 'undefined' && name !== '') {
-                  startCol = col;
-                  break;
-                }
-              }
-            }
-            
-            // Собираем все непустые секции начиная с startCol
-            for (let col = startCol; col < rows[0].c.length; col++) {
-              const cell = rows[0].c[col];
-              if (cell && cell.v) {
-                const name = cell.v.toString().trim();
+                // Пропускаем пустые названия
                 if (name && name.length > 0 && name !== 'undefined' && name !== '') {
                   sections.push({
                     name: name,
@@ -907,7 +894,7 @@
               }
             }
             
-            // ВСЕГДА СОЗДАЕМ СЛАЙД
+            // ВСЕГДА СОЗДАЕМ СЛАЙД (даже если данных нет)
             const slideDiv = document.createElement('div');
             slideDiv.className = 'slider-slide slide-ladak';
             
@@ -976,7 +963,7 @@
             track.appendChild(slideDiv);
           });
           
-          // Обновляем слайдер
+          // --- 3. Обновляем слайдер ---
           totalSlides = track.querySelectorAll('.slider-slide').length;
           if (totalSlides > 0) {
             updateDots();
